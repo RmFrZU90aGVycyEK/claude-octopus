@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# build-factory-skills.sh — Generate Factory AI-compatible skills/<name>/SKILL.md
+# and commands/<name>.md from .claude/skills/*.md and .claude/commands/*.md.
+#
+# Factory format: skills/<skill-name>/SKILL.md with frontmatter: name, version, description
+# Factory format: commands/<name>.md with frontmatter: description
+# Our format: .claude/skills/<skill-name>.md with extended frontmatter
+#
+# Usage: bash scripts/build-factory-skills.sh [--clean]
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SKILLS_SRC="$PLUGIN_ROOT/.claude/skills"
+SKILLS_OUT="$PLUGIN_ROOT/skills"
+COMMANDS_SRC="$PLUGIN_ROOT/.claude/commands"
+COMMANDS_OUT="$PLUGIN_ROOT/commands"
+
+# Octopus-only frontmatter keys to strip (Factory doesn't understand these)
+STRIP_KEYS="agent|aliases|category|context|cost_optimization|created|execution_mode|invocation|pattern|pre_execution_contract|providers|tags|task_dependencies|task_management|trigger|updated|use_native_tasks|validation_gates|version"
+
+if [[ "${1:-}" == "--clean" ]]; then
+  echo "Cleaning generated skills and commands directories..."
+  rm -rf "$SKILLS_OUT" "$COMMANDS_OUT"
+  echo "Done."
+  exit 0
+fi
+
+# --- Skills generation ---
+
+rm -rf "$SKILLS_OUT"
+mkdir -p "$SKILLS_OUT"
+
+generated=0
+skipped=0
+
+for src in "$SKILLS_SRC"/*.md; do
+  filename="$(basename "$src" .md)"
+
+  # Extract frontmatter (between first and second ---)
+  frontmatter="$(sed -n '/^---$/,/^---$/p' "$src" | sed '1d;$d')"
+
+  # Skip human_only skills
+  if echo "$frontmatter" | grep -q "^invocation: human_only"; then
+    echo "  SKIP (human_only): $filename"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  # Extract name from frontmatter
+  skill_name="$(echo "$frontmatter" | grep "^name:" | head -1 | sed 's/^name: *//')"
+  if [[ -z "$skill_name" ]]; then
+    echo "  SKIP (no name): $filename"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  # Extract description (may be multiline — take first line only for Factory)
+  description="$(echo "$frontmatter" | grep "^description:" | head -1 | sed 's/^description: *//' | sed 's/^"//' | sed 's/"$//')"
+
+  # Extract trigger content to enrich description
+  trigger=""
+  if echo "$frontmatter" | grep -q "^trigger:"; then
+    trigger="$(echo "$frontmatter" | sed -n '/^trigger:/,/^[a-z_]*:/{ /^trigger:/d; /^[a-z_]*:/d; p; }' | sed 's/^  //' | head -5)"
+  fi
+
+  # Build Factory-compatible description
+  # Factory uses description as the selection signal, so merge trigger hints
+  factory_desc="$description"
+  if [[ -n "$trigger" ]]; then
+    # Take meaningful trigger lines (skip blanks, "DO NOT" lines, and YAML delimiters)
+    trigger_hints="$(echo "$trigger" | grep -v "^$" | grep -vi "DO NOT" | grep -v "^---$" | head -3 | sed 's/^- //' | awk 'NR>1{printf ". "}{printf "%s",$0}')"
+    if [[ -n "$trigger_hints" ]]; then
+      factory_desc="$description. Use when: $trigger_hints"
+    fi
+  fi
+
+  # Extract body (everything after second ---)
+  body="$(awk 'BEGIN{c=0} /^---$/{c++; if(c==2){found=1; next}} found{print}' "$src")"
+
+  # Create output directory
+  out_dir="$SKILLS_OUT/$skill_name"
+  mkdir -p "$out_dir"
+
+  # Write Factory-compatible SKILL.md
+  cat > "$out_dir/SKILL.md" << SKILLEOF
+---
+name: $skill_name
+version: 1.0.0
+description: $factory_desc
+---
+$body
+SKILLEOF
+
+  echo "  GEN: $skill_name ($filename)"
+  generated=$((generated + 1))
+done
+
+echo ""
+echo "Factory skills generated: $generated"
+echo "Skipped: $skipped"
+echo "Output: $SKILLS_OUT/"
+
+# --- Commands generation ---
+
+rm -rf "$COMMANDS_OUT"
+mkdir -p "$COMMANDS_OUT"
+
+cmd_count=0
+
+if [[ -d "$COMMANDS_SRC" ]]; then
+  for src in "$COMMANDS_SRC"/*.md; do
+    [[ -f "$src" ]] || continue
+    cp "$src" "$COMMANDS_OUT/"
+    cmd_count=$((cmd_count + 1))
+  done
+fi
+
+echo ""
+echo "Factory commands copied: $cmd_count"
+echo "Output: $COMMANDS_OUT/"

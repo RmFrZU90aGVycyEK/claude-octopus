@@ -49,8 +49,8 @@ Add to your `.factory/settings.json` for team-wide deployment:
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| 49 slash commands (`/octo:*`) | Works | All commands available via `/octo:` prefix |
-| 50 skills | Works | Auto-loaded by Droid's skill system |
+| 44 skills (auto-discovered) | Works | Generated `skills/<name>/SKILL.md` directories |
+| 49 slash commands | Works | Copied to `commands/` at plugin root |
 | 32 expert personas | Works | Persona routing via `agents/config.yaml` |
 | Multi-provider orchestration | Works | Codex + Gemini + host model |
 | Double Diamond workflow | Works | Discover, Define, Develop, Deliver |
@@ -58,17 +58,65 @@ Add to your `.factory/settings.json` for team-wide deployment:
 | Worktree isolation | Works | Factory supports worktrees |
 | MCP server integration | Works | Factory has native MCP support |
 
+### What Doesn't Map
+
+| Feature | Notes |
+|---------|-------|
+| 6 human-only skills | Excluded from Factory (require interactive Claude Code features) |
+| Command namespacing (`/octo:*`) | Factory commands use filename as-is (`/setup`, `/define`), not prefixed with `octo:` |
+
 ## Differences from Claude Code
 
 | Aspect | Claude Code | Factory AI |
 |--------|------------|------------|
 | Plugin root variable | `${CLAUDE_PLUGIN_ROOT}` | `${DROID_PLUGIN_ROOT}` (auto-resolved) |
 | Manifest location | `.claude-plugin/plugin.json` | `.factory-plugin/plugin.json` |
+| Skill format | `.claude/skills/<name>.md` (flat) | `skills/<name>/SKILL.md` (directory per skill) |
+| Skill frontmatter | Extended (agent, context, trigger, etc.) | Simple (name, version, description) |
+| Commands | `.claude/commands/<name>.md` | `commands/<name>.md` (no plugin prefix) |
 | Subagents | "agents" | "droids" |
 | Version detection | `claude --version` | `droid --version` |
 | Model selection | Claude models + external | Any model (OpenAI, Anthropic, Google, xAI, local) |
 
 Octopus detects which host platform it's running on and adapts automatically. Factory's interop layer resolves `${CLAUDE_PLUGIN_ROOT}` to `${DROID_PLUGIN_ROOT}` transparently.
+
+## Cross-Platform Skill Discovery
+
+Claude Code discovers skills from `.claude/skills/` (declared in `.claude-plugin/plugin.json`). Factory AI discovers skills from `skills/<name>/SKILL.md` directories at the plugin root.
+
+To serve both platforms from the same repo, Octopus uses a **build script** that generates Factory-compatible skill directories from the Claude Code source files:
+
+```bash
+# Generate Factory-compatible skills/ directory
+bash scripts/build-factory-skills.sh
+
+# Clean generated skills
+bash scripts/build-factory-skills.sh --clean
+```
+
+The build script:
+1. Reads each `.claude/skills/*.md` file
+2. Strips Octopus-specific frontmatter (agent, context, execution_mode, trigger, etc.)
+3. Adds `version: 1.0.0` (required by Factory)
+4. Merges `trigger` content into `description` (Factory uses description for skill selection)
+5. Skips skills marked `invocation: human_only`
+6. Writes `skills/<skill-name>/SKILL.md`
+7. Copies `.claude/commands/*.md` to `commands/` for Factory command discovery
+
+The generated `skills/` and `commands/` directories are **committed to git** (not gitignored), so Factory discovers everything immediately on install without a build step.
+
+> **Note:** On Claude Code, commands are namespaced as `/octo:<name>` (e.g., `/octo:setup`).
+> On Factory, they appear as `/<name>` (e.g., `/setup`) since Factory uses the filename directly.
+
+### Regenerating After Skill or Command Changes
+
+When you add, modify, or remove skills in `.claude/skills/` or commands in `.claude/commands/`, regenerate:
+
+```bash
+bash scripts/build-factory-skills.sh
+```
+
+Then commit the updated `skills/` and `commands/` directories.
 
 ## Setup
 
@@ -96,23 +144,10 @@ Octopus runs its orchestration layer (`scripts/orchestrate.sh`) as a bash subpro
 
 1. Both platforms support `Bash` tool execution
 2. Both platforms support hook lifecycle events
-3. Both platforms support skills and commands
+3. Both platforms support skills (Factory via `skills/`, Claude Code via `.claude/skills/`)
 4. The orchestrator communicates via files and stdout, not platform-specific APIs
 
 The only platform-specific code is version detection (`detect_claude_code_version()`), which auto-detects Factory and assumes full feature parity.
-
-### Cross-Platform Command/Skill Discovery
-
-Claude Code discovers commands and skills from `.claude/commands/` and `.claude/skills/` (declared in `.claude-plugin/plugin.json`). Factory AI uses directory-based auto-discovery from `commands/` and `skills/` at the plugin root.
-
-To serve both platforms from the same files, the plugin root contains symlinks:
-
-```
-commands -> .claude/commands
-skills -> .claude/skills
-```
-
-Git tracks symlinks natively, so both platforms resolve to the same files with no duplication or sync overhead.
 
 ## Troubleshooting
 
@@ -125,18 +160,17 @@ droid plugin list
 
 Check that `.factory-plugin/plugin.json` exists in the plugin root.
 
-### Commands not appearing
+### Skills not appearing
 
-Verify the `commands` and `skills` symlinks exist at the plugin root:
+Verify the `skills/` directory exists and contains SKILL.md files:
 ```bash
-ls -la commands skills
-# Should show: commands -> .claude/commands, skills -> .claude/skills
+ls skills/*/SKILL.md | wc -l
+# Should show 44
 ```
 
-If symlinks are broken, recreate them:
+If missing, regenerate:
 ```bash
-ln -s .claude/commands commands
-ln -s .claude/skills skills
+bash scripts/build-factory-skills.sh
 ```
 
 Also run `/plugins` in Droid to check plugin status. Ensure the plugin is enabled at the correct scope (user or project).
