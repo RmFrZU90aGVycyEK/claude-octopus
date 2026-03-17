@@ -1255,9 +1255,11 @@ echo ""
 # ============================================
 echo -e "${YELLOW}21. Performance Optimizations (v4.8.1)${NC}"
 
-# JSON parsing optimization
-echo -n "  json_extract() function exists... "
-if grep -q '^json_extract()' "$SCRIPT"; then
+# JSON parsing optimization (extracted to lib/utils.sh in v8.x, sourced by orchestrate.sh)
+UTILS_SCRIPT="$SCRIPT_DIR/lib/utils.sh"
+
+echo -n "  json_extract() function exists in lib/utils.sh... "
+if grep -q '^json_extract()' "$UTILS_SCRIPT"; then
     echo -e "${GREEN}PASS${NC}"
     ((PASS++))
 else
@@ -1265,8 +1267,8 @@ else
     ((FAIL++))
 fi
 
-echo -n "  json_extract_multi() function exists... "
-if grep -q '^json_extract_multi()' "$SCRIPT"; then
+echo -n "  json_extract_multi() function exists in lib/utils.sh... "
+if grep -q '^json_extract_multi()' "$UTILS_SCRIPT"; then
     echo -e "${GREEN}PASS${NC}"
     ((PASS++))
 else
@@ -1275,7 +1277,7 @@ else
 fi
 
 echo -n "  json_extract uses bash regex (no subprocess)... "
-if grep -A10 '^json_extract()' "$SCRIPT" | grep -q 'BASH_REMATCH'; then
+if grep -A10 '^json_extract()' "$UTILS_SCRIPT" | grep -q 'BASH_REMATCH'; then
     echo -e "${GREEN}PASS${NC}"
     ((PASS++))
 else
@@ -1692,12 +1694,13 @@ else
     ((FAIL++))
 fi
 
-echo -n "  docs/monthly-agent-review.md exists... "
-if [[ -f "$SCRIPT_DIR/../docs/monthly-agent-review.md" ]]; then
+# monthly-agent-review.md relocated to octopus-dev workspace (not in public plugin repo)
+echo -n "  docs/monthly-agent-review.md relocated (not in plugin)... "
+if [[ ! -f "$SCRIPT_DIR/../docs/monthly-agent-review.md" ]]; then
     echo -e "${GREEN}PASS${NC}"
     ((PASS++))
 else
-    echo -e "${RED}FAIL${NC}"
+    echo -e "${RED}FAIL${NC} (should not be in plugin — belongs in octopus-dev workspace)"
     ((FAIL++))
 fi
 

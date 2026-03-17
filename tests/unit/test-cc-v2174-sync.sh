@@ -13,10 +13,10 @@ fail() { TEST_COUNT=$((TEST_COUNT+1)); FAIL_COUNT=$((FAIL_COUNT+1)); echo "FAIL:
 
 # ── 1. Flag declarations exist ────────────────────────────────────────
 
-for flag in SUPPORTS_PARALLEL_TOOL_RESILIENCE SUPPORTS_PLAN_WITH_ARGS \
+for flag in SUPPORTS_PARALLEL_TOOL_RESILIENCE \
             SUPPORTS_AUTO_MEMORY_DIR SUPPORTS_FULL_MODEL_IDS \
-            SUPPORTS_SESSION_END_TIMEOUT SUPPORTS_CONTEXT_SUGGESTIONS \
-            SUPPORTS_PLUGIN_DIR_OVERRIDE SUPPORTS_MANAGED_POLICY_FIX; do
+            SUPPORTS_CONTEXT_SUGGESTIONS \
+            SUPPORTS_PLUGIN_DIR_OVERRIDE; do
     if grep -c "${flag}=false" "$ORCH" >/dev/null 2>&1; then
         pass "Declaration: $flag"
     else
@@ -28,7 +28,7 @@ done
 
 v2172_block=$(grep -A20 'version_compare.*2\.1\.72' "$ORCH" | head -20)
 
-for flag in SUPPORTS_PARALLEL_TOOL_RESILIENCE SUPPORTS_PLAN_WITH_ARGS; do
+for flag in SUPPORTS_PARALLEL_TOOL_RESILIENCE; do
     if echo "$v2172_block" | grep -c "$flag=true" >/dev/null 2>&1; then
         pass "v2.1.72 block sets: $flag"
     else
@@ -47,8 +47,8 @@ fi
 v2174_block=$(grep -A15 'version_compare.*2\.1\.74' "$ORCH" | head -15)
 
 for flag in SUPPORTS_AUTO_MEMORY_DIR SUPPORTS_FULL_MODEL_IDS \
-            SUPPORTS_SESSION_END_TIMEOUT SUPPORTS_CONTEXT_SUGGESTIONS \
-            SUPPORTS_PLUGIN_DIR_OVERRIDE SUPPORTS_MANAGED_POLICY_FIX; do
+            SUPPORTS_CONTEXT_SUGGESTIONS \
+            SUPPORTS_PLUGIN_DIR_OVERRIDE; do
     if echo "$v2174_block" | grep -c "$flag=true" >/dev/null 2>&1; then
         pass "v2.1.74 block sets: $flag"
     else
@@ -58,9 +58,9 @@ done
 
 # ── 4. Logging lines for new flags ───────────────────────────────────
 
-for label in "Parallel Tool Resilience" "Plan With Args" "Auto Memory Dir" \
-             "Full Model IDs" "Session End Timeout" "Context Suggestions" \
-             "Plugin Dir Override" "Managed Policy Fix"; do
+for label in "Parallel Tool Resilience" "Auto Memory Dir" \
+             "Full Model IDs" "Context Suggestions" \
+             "Plugin Dir Override"; do
     if grep -c "$label" "$ORCH" >/dev/null 2>&1; then
         pass "Log line: $label"
     else
@@ -103,10 +103,10 @@ fi
 
 # ── 8. Flag comments reference correct CC versions ───────────────────
 
-for flag_ver in "PARALLEL_TOOL_RESILIENCE.*v2.1.72" "PLAN_WITH_ARGS.*v2.1.72" \
+for flag_ver in "PARALLEL_TOOL_RESILIENCE.*v2.1.72" \
                 "AUTO_MEMORY_DIR.*v2.1.74" "FULL_MODEL_IDS.*v2.1.74" \
-                "SESSION_END_TIMEOUT.*v2.1.74" "CONTEXT_SUGGESTIONS.*v2.1.74" \
-                "PLUGIN_DIR_OVERRIDE.*v2.1.74" "MANAGED_POLICY_FIX.*v2.1.74"; do
+                "CONTEXT_SUGGESTIONS.*v2.1.74" \
+                "PLUGIN_DIR_OVERRIDE.*v2.1.74"; do
     if grep -cE "$flag_ver" "$ORCH" >/dev/null 2>&1; then
         pass "Version comment: $flag_ver"
     else

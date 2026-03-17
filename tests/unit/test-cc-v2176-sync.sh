@@ -13,8 +13,8 @@ fail() { TEST_COUNT=$((TEST_COUNT+1)); FAIL_COUNT=$((FAIL_COUNT+1)); echo "FAIL:
 
 # ── 1. Flag declarations exist ────────────────────────────────────────
 
-for flag in SUPPORTS_MCP_ELICITATION SUPPORTS_ELICITATION_HOOKS \
-            SUPPORTS_WORKTREE_SPARSE_PATHS SUPPORTS_POST_COMPACT_HOOK \
+for flag in SUPPORTS_MCP_ELICITATION \
+            SUPPORTS_WORKTREE_SPARSE_PATHS \
             SUPPORTS_EFFORT_COMMAND SUPPORTS_BG_PARTIAL_RESULTS; do
     if grep -c "${flag}=false" "$ORCH" >/dev/null 2>&1; then
         pass "Declaration: $flag"
@@ -33,8 +33,8 @@ fi
 
 v2176_block=$(grep -A15 'version_compare.*2\.1\.76' "$ORCH" | head -15)
 
-for flag in SUPPORTS_MCP_ELICITATION SUPPORTS_ELICITATION_HOOKS \
-            SUPPORTS_WORKTREE_SPARSE_PATHS SUPPORTS_POST_COMPACT_HOOK \
+for flag in SUPPORTS_MCP_ELICITATION \
+            SUPPORTS_WORKTREE_SPARSE_PATHS \
             SUPPORTS_EFFORT_COMMAND SUPPORTS_BG_PARTIAL_RESULTS; do
     if echo "$v2176_block" | grep -c "$flag=true" >/dev/null 2>&1; then
         pass "v2.1.76 block sets: $flag"
@@ -45,8 +45,8 @@ done
 
 # ── 3. Logging lines for new flags ───────────────────────────────────
 
-for label in "MCP Elicitation" "Elicitation Hooks" "Worktree Sparse Paths" \
-             "Post Compact Hook" "Effort Command" "BG Partial Results"; do
+for label in "MCP Elicitation" "Worktree Sparse Paths" \
+             "Effort Command" "BG Partial Results"; do
     if grep -c "$label" "$ORCH" >/dev/null 2>&1; then
         pass "Log line: $label"
     else
@@ -98,8 +98,8 @@ fi
 
 # ── 9. Flag comments reference correct CC version ────────────────────
 
-for flag_ver in "MCP_ELICITATION.*v2.1.76" "ELICITATION_HOOKS.*v2.1.76" \
-                "WORKTREE_SPARSE_PATHS.*v2.1.76" "POST_COMPACT_HOOK.*v2.1.76" \
+for flag_ver in "MCP_ELICITATION.*v2.1.76" \
+                "WORKTREE_SPARSE_PATHS.*v2.1.76" \
                 "EFFORT_COMMAND.*v2.1.76" "BG_PARTIAL_RESULTS.*v2.1.76"; do
     if grep -cE "$flag_ver" "$ORCH" >/dev/null 2>&1; then
         pass "Version comment: $flag_ver"
@@ -108,22 +108,22 @@ for flag_ver in "MCP_ELICITATION.*v2.1.76" "ELICITATION_HOOKS.*v2.1.76" \
     fi
 done
 
-# ── 10. Total flag count validation (100 total with 6 new) ───────────
+# ── 10. Total flag count validation (pruned 18 banner-only flags in v9.5) ───────────
 
 flag_count=$(grep -c 'SUPPORTS_.*=false' "$ORCH" || true)
-if [[ $flag_count -ge 100 ]]; then
-    pass "Total flag count: $flag_count (expected >= 100)"
+if [[ $flag_count -ge 90 ]]; then
+    pass "Total flag count: $flag_count (expected >= 90)"
 else
-    fail "Total flag count: $flag_count" "expected >= 100 flags"
+    fail "Total flag count: $flag_count" "expected >= 90 flags"
 fi
 
-# ── 11. Version_compare block count (31 total) ──────────────────────
+# ── 11. Version_compare block count (29 after v2.1.70/v2.1.71 pruning) ──────────────────────
 
 block_count=$(grep -c 'version_compare.*CLAUDE_CODE_VERSION' "$ORCH" || true)
-if [[ $block_count -ge 31 ]]; then
-    pass "Version compare block count: $block_count (expected >= 31)"
+if [[ $block_count -ge 29 ]]; then
+    pass "Version compare block count: $block_count (expected >= 29)"
 else
-    fail "Version compare block count: $block_count" "expected >= 31 blocks"
+    fail "Version compare block count: $block_count" "expected >= 29 blocks"
 fi
 
 # ── 12. No v2.1.75 block (no plugin-relevant changes) ───────────────

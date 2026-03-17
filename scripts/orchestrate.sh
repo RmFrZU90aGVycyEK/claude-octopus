@@ -495,40 +495,32 @@ SUPPORTS_STATUSLINE_WORKTREE=false    # v8.34: Claude Code v2.1.69+ (worktree fi
 SUPPORTS_RELOAD_PLUGINS=false         # v8.34: Claude Code v2.1.69+ (/reload-plugins command)
 SUPPORTS_DISABLE_GIT_INSTRUCTIONS=false # v8.34: Claude Code v2.1.69+ (includeGitInstructions setting)
 SUPPORTS_GIT_SUBDIR_PLUGINS=false     # v8.34: Claude Code v2.1.69+ (git-subdir plugin source type)
-SUPPORTS_VSCODE_PLAN_VIEW=false       # v8.40: Claude Code v2.1.70+ (VSCode full markdown plan view with comments)
-SUPPORTS_IMAGE_CACHE_COMPACTION=false  # v8.40: Claude Code v2.1.70+ (compaction preserves images for prompt cache)
-SUPPORTS_RENAME_WHILE_PROCESSING=false # v8.40: Claude Code v2.1.70+ (/rename works during processing)
-SUPPORTS_NATIVE_LOOP=false            # v8.40: Claude Code v2.1.71+ (/loop command + cron scheduling tools)
-SUPPORTS_RUNTIME_DEBUG=false          # v8.40: Claude Code v2.1.71+ (/debug toggle mid-session)
-SUPPORTS_FAST_BRIDGE_RECONNECT=false  # v8.40: Claude Code v2.1.71+ (bridge reconnects in seconds, not 10min)
-SUPPORTS_EXIT_WORKTREE=false           # v8.48: Claude Code v2.1.72+ (ExitWorktree tool to leave worktree sessions)
 SUPPORTS_AGENT_MODEL_OVERRIDE=false    # v8.48: Claude Code v2.1.72+ (Agent tool model parameter restored)
 SUPPORTS_EFFORT_REDESIGN=false         # v8.48: Claude Code v2.1.72+ (effort simplified: low/medium/high, max removed, ○◐● symbols)
 SUPPORTS_DISABLE_CRON_ENV=false        # v8.48: Claude Code v2.1.72+ (CLAUDE_CODE_DISABLE_CRON env var)
-SUPPORTS_HIDDEN_HTML_COMMENTS=false    # v8.48: Claude Code v2.1.72+ (HTML comments hidden in auto-injected CLAUDE.md)
-SUPPORTS_BASH_ALLOWLIST_V2=false       # v8.48: Claude Code v2.1.72+ (lsof/pgrep/tput/ss/fd/fdfind auto-allowed)
-SUPPORTS_CLEAR_PRESERVES_BG=false      # v8.48: Claude Code v2.1.72+ (/clear no longer kills background tasks)
-SUPPORTS_TEAM_MODEL_INHERIT_FIX=false  # v8.48: Claude Code v2.1.72+ (team agents inherit leader model fix)
 SUPPORTS_MODEL_OVERRIDES=false         # v8.52: Claude Code v2.1.73+ (modelOverrides setting for custom provider model IDs e.g. Bedrock ARNs)
-SUPPORTS_LOOP_ENTERPRISE_FIX=false     # v8.52: Claude Code v2.1.73+ (/loop now works on Bedrock/Vertex/Foundry + telemetry-disabled)
 SUPPORTS_SUBAGENT_MODEL_FIX=false      # v8.52: Claude Code v2.1.73+ (model: opus/sonnet/haiku no longer downgraded on Bedrock/Vertex/Foundry)
-SUPPORTS_SESSION_RESUME_HOOK_FIX=false # v8.52: Claude Code v2.1.73+ (SessionStart hooks fire once on --resume, not twice)
 SUPPORTS_BG_PROCESS_CLEANUP=false      # v8.52: Claude Code v2.1.73+ (background bash from subagents cleaned up on agent exit)
 SUPPORTS_SKILL_DEADLOCK_FIX=false      # v8.52: Claude Code v2.1.73+ (no deadlock with large .claude/skills/ during git pull)
 SUPPORTS_PARALLEL_TOOL_RESILIENCE=false # v8.56: Claude Code v2.1.72+ (failed Read/WebFetch/Glob no longer cancels sibling parallel tool calls)
-SUPPORTS_PLAN_WITH_ARGS=false          # v8.56: Claude Code v2.1.72+ (/plan accepts description argument e.g. /plan fix the auth bug)
 SUPPORTS_AUTO_MEMORY_DIR=false         # v8.56: Claude Code v2.1.74+ (autoMemoryDirectory setting for custom auto-memory storage path)
 SUPPORTS_FULL_MODEL_IDS=false          # v8.56: Claude Code v2.1.74+ (full model IDs e.g. claude-opus-4-6 work in agent model: frontmatter)
-SUPPORTS_SESSION_END_TIMEOUT=false     # v8.56: Claude Code v2.1.74+ (CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS configurable SessionEnd hook timeout)
 SUPPORTS_CONTEXT_SUGGESTIONS=false     # v8.56: Claude Code v2.1.74+ (/context command shows actionable optimization tips)
 SUPPORTS_PLUGIN_DIR_OVERRIDE=false     # v8.56: Claude Code v2.1.74+ (--plugin-dir local dev copies override installed marketplace plugins)
-SUPPORTS_MANAGED_POLICY_FIX=false      # v8.56: Claude Code v2.1.74+ (managed policy ask rules no longer bypassed by user allow/skill allowed-tools)
 SUPPORTS_MCP_ELICITATION=false        # v8.57: Claude Code v2.1.76+ (MCP servers can request structured user input mid-task via interactive dialog)
-SUPPORTS_ELICITATION_HOOKS=false      # v8.57: Claude Code v2.1.76+ (Elicitation and ElicitationResult hook events for intercepting MCP elicitation)
 SUPPORTS_WORKTREE_SPARSE_PATHS=false  # v8.57: Claude Code v2.1.76+ (worktree.sparsePaths setting for sparse checkout in --worktree mode)
-SUPPORTS_POST_COMPACT_HOOK=false      # v8.57: Claude Code v2.1.76+ (PostCompact hook event fires after context compaction completes)
 SUPPORTS_EFFORT_COMMAND=false         # v8.57: Claude Code v2.1.76+ (/effort slash command to set model effort level during session)
 SUPPORTS_BG_PARTIAL_RESULTS=false     # v8.57: Claude Code v2.1.76+ (killing background agent preserves partial results in conversation context)
+SUPPORTS_ALLOW_READ_SANDBOX=false     # v9.5: Claude Code v2.1.77+ (allowRead sandbox filesystem setting restricts Read tool path access)
+SUPPORTS_COPY_INDEX=false             # v9.5: Claude Code v2.1.77+ (/copy N copies Nth response from conversation history)
+SUPPORTS_COMPOUND_BASH_PERMISSION_FIX=false # v9.5: Claude Code v2.1.77+ (compound bash always-allow applies to each sub-command individually)
+SUPPORTS_RESUME_TRUNCATION_FIX=false  # v9.5: Claude Code v2.1.77+ (--resume no longer truncates history on long sessions)
+SUPPORTS_PRETOOLUSE_DENY_PRIORITY=false # v9.5: Claude Code v2.1.77+ (PreToolUse allow can no longer bypass enterprise deny rules)
+SUPPORTS_SENDMESSAGE_AUTO_RESUME=false # v9.5: Claude Code v2.1.77+ (SendMessage auto-resumes stopped agents without manual re-dispatch)
+SUPPORTS_AGENT_NO_RESUME_PARAM=false  # v9.5: Claude Code v2.1.77+ (Agent tool resume parameter removed — use SendMessage instead)
+SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER=false # v9.5: Claude Code v2.1.77+ (claude plugin validate checks skill/agent frontmatter and hooks.json schema)
+SUPPORTS_BRANCH_COMMAND=false         # v9.5: Claude Code v2.1.77+ (/fork renamed to /branch for conversation branching)
+SUPPORTS_BG_BASH_5GB_KILL=false       # v9.5: Claude Code v2.1.77+ (background bash processes killed at 5GB output to prevent runaway tasks)
 SUPPORTS_CONTINUATION=false           # v8.30: Agent resume/continuation for iterative retries
 OCTOPUS_BACKEND="api"              # v8.16: Detected backend (api|bedrock|vertex|foundry)
 AGENT_TEAMS_ENABLED="${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-0}"
@@ -573,7 +565,7 @@ detect_claude_code_version() {
     # v8.36.0: Support Factory AI Droid runtime alongside Claude Code
     if [[ "$OCTOPUS_HOST" == "factory" ]]; then
         if command -v droid &>/dev/null; then
-            CLAUDE_CODE_VERSION=$(droid --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            CLAUDE_CODE_VERSION=$(droid --version 2>/dev/null | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
             log "INFO" "Factory AI Droid detected (v${CLAUDE_CODE_VERSION:-unknown})"
         fi
         # Factory's plugin format is interop with Claude Code — enable all modern features
@@ -603,7 +595,7 @@ detect_claude_code_version() {
     fi
     if command -v claude &>/dev/null; then
         # Get version from Claude CLI
-        CLAUDE_CODE_VERSION=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        CLAUDE_CODE_VERSION=$(claude --version 2>/dev/null | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
     fi
 
     if [[ -z "$CLAUDE_CODE_VERSION" ]]; then
@@ -770,61 +762,51 @@ detect_claude_code_version() {
         SUPPORTS_GIT_SUBDIR_PLUGINS=true
     fi
 
-    # Check for v2.1.70+ features (VSCode plan view, image compaction, rename while processing)
-    if version_compare "$CLAUDE_CODE_VERSION" "2.1.70" ">="; then
-        SUPPORTS_VSCODE_PLAN_VIEW=true
-        SUPPORTS_IMAGE_CACHE_COMPACTION=true
-        SUPPORTS_RENAME_WHILE_PROCESSING=true
-    fi
-
-    # Check for v2.1.71+ features (native /loop + cron, runtime debug toggle, fast bridge reconnect)
-    if version_compare "$CLAUDE_CODE_VERSION" "2.1.71" ">="; then
-        SUPPORTS_NATIVE_LOOP=true
-        SUPPORTS_RUNTIME_DEBUG=true
-        SUPPORTS_FAST_BRIDGE_RECONNECT=true
-    fi
-
-    # Check for v2.1.72+ features (ExitWorktree, Agent model override, effort redesign, cron disable env, parallel tool resilience, plan args)
+    # Check for v2.1.72+ features (Agent model override, effort redesign, cron disable env, parallel tool resilience)
     if version_compare "$CLAUDE_CODE_VERSION" "2.1.72" ">="; then
-        SUPPORTS_EXIT_WORKTREE=true
         SUPPORTS_AGENT_MODEL_OVERRIDE=true
         SUPPORTS_EFFORT_REDESIGN=true
         SUPPORTS_DISABLE_CRON_ENV=true
-        SUPPORTS_HIDDEN_HTML_COMMENTS=true
-        SUPPORTS_BASH_ALLOWLIST_V2=true
-        SUPPORTS_CLEAR_PRESERVES_BG=true
-        SUPPORTS_TEAM_MODEL_INHERIT_FIX=true
         SUPPORTS_PARALLEL_TOOL_RESILIENCE=true
-        SUPPORTS_PLAN_WITH_ARGS=true
     fi
 
-    # Check for v2.1.73+ features (modelOverrides, loop enterprise, subagent model fix, session resume hook fix, bg cleanup, skill deadlock fix)
+    # Check for v2.1.73+ features (modelOverrides, subagent model fix, bg cleanup, skill deadlock fix)
     if version_compare "$CLAUDE_CODE_VERSION" "2.1.73" ">="; then
         SUPPORTS_MODEL_OVERRIDES=true
-        SUPPORTS_LOOP_ENTERPRISE_FIX=true
         SUPPORTS_SUBAGENT_MODEL_FIX=true
-        SUPPORTS_SESSION_RESUME_HOOK_FIX=true
         SUPPORTS_BG_PROCESS_CLEANUP=true
         SUPPORTS_SKILL_DEADLOCK_FIX=true
     fi
 
-    # Check for v2.1.74+ features (autoMemoryDirectory, full model IDs in agents, SessionEnd timeout, /context, plugin-dir override, managed policy fix)
+    # Check for v2.1.74+ features (autoMemoryDirectory, full model IDs, /context, plugin-dir override)
     if version_compare "$CLAUDE_CODE_VERSION" "2.1.74" ">="; then
         SUPPORTS_AUTO_MEMORY_DIR=true
         SUPPORTS_FULL_MODEL_IDS=true
-        SUPPORTS_SESSION_END_TIMEOUT=true
         SUPPORTS_CONTEXT_SUGGESTIONS=true
         SUPPORTS_PLUGIN_DIR_OVERRIDE=true
-        SUPPORTS_MANAGED_POLICY_FIX=true
     fi
 
     if version_compare "$CLAUDE_CODE_VERSION" "2.1.76" ">="; then
         SUPPORTS_MCP_ELICITATION=true
-        SUPPORTS_ELICITATION_HOOKS=true
         SUPPORTS_WORKTREE_SPARSE_PATHS=true
-        SUPPORTS_POST_COMPACT_HOOK=true
         SUPPORTS_EFFORT_COMMAND=true
         SUPPORTS_BG_PARTIAL_RESULTS=true
+    fi
+
+    # Check for v2.1.77+ features (allowRead sandbox, /copy N, compound bash fix, resume truncation fix,
+    #   PreToolUse deny priority, SendMessage auto-resume, Agent resume param removed, plugin validate,
+    #   /fork→/branch rename, bg bash 5GB kill)
+    if version_compare "$CLAUDE_CODE_VERSION" "2.1.77" ">="; then
+        SUPPORTS_ALLOW_READ_SANDBOX=true
+        SUPPORTS_COPY_INDEX=true
+        SUPPORTS_COMPOUND_BASH_PERMISSION_FIX=true
+        SUPPORTS_RESUME_TRUNCATION_FIX=true
+        SUPPORTS_PRETOOLUSE_DENY_PRIORITY=true
+        SUPPORTS_SENDMESSAGE_AUTO_RESUME=true
+        SUPPORTS_AGENT_NO_RESUME_PARAM=true
+        SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER=true
+        SUPPORTS_BRANCH_COMMAND=true
+        SUPPORTS_BG_BASH_5GB_KILL=true
     fi
 
     log "INFO" "Claude Code v$CLAUDE_CODE_VERSION detected"
@@ -845,18 +827,14 @@ detect_claude_code_version() {
     log "INFO" "Opus Medium Effort: $SUPPORTS_OPUS_MEDIUM_EFFORT | Ultrathink: $SUPPORTS_ULTRATHINK | Opus 4.0 Removed: $SUPPORTS_OPUS_40_REMOVED"
     log "INFO" "Skill Dir Var: $SUPPORTS_SKILL_DIR_VAR | Instructions Hook: $SUPPORTS_INSTRUCTIONS_LOADED_HOOK | Hook Agent Fields: $SUPPORTS_HOOK_AGENT_FIELDS"
     log "INFO" "Statusline Worktree: $SUPPORTS_STATUSLINE_WORKTREE | Reload Plugins: $SUPPORTS_RELOAD_PLUGINS | Disable Git Instructions: $SUPPORTS_DISABLE_GIT_INSTRUCTIONS"
-    log "INFO" "VSCode Plan: $SUPPORTS_VSCODE_PLAN_VIEW | Image Compaction: $SUPPORTS_IMAGE_CACHE_COMPACTION | Rename While Processing: $SUPPORTS_RENAME_WHILE_PROCESSING"
-    log "INFO" "Native Loop: $SUPPORTS_NATIVE_LOOP | Runtime Debug: $SUPPORTS_RUNTIME_DEBUG | Fast Bridge: $SUPPORTS_FAST_BRIDGE_RECONNECT"
-    log "INFO" "Exit Worktree: $SUPPORTS_EXIT_WORKTREE | Agent Model Override: $SUPPORTS_AGENT_MODEL_OVERRIDE | Effort Redesign: $SUPPORTS_EFFORT_REDESIGN"
-    log "INFO" "Disable Cron Env: $SUPPORTS_DISABLE_CRON_ENV | Hidden HTML Comments: $SUPPORTS_HIDDEN_HTML_COMMENTS | Bash Allowlist V2: $SUPPORTS_BASH_ALLOWLIST_V2"
-    log "INFO" "Clear Preserves BG: $SUPPORTS_CLEAR_PRESERVES_BG | Team Model Inherit Fix: $SUPPORTS_TEAM_MODEL_INHERIT_FIX"
-    log "INFO" "Model Overrides: $SUPPORTS_MODEL_OVERRIDES | Loop Enterprise Fix: $SUPPORTS_LOOP_ENTERPRISE_FIX | Subagent Model Fix: $SUPPORTS_SUBAGENT_MODEL_FIX"
-    log "INFO" "Session Resume Hook Fix: $SUPPORTS_SESSION_RESUME_HOOK_FIX | BG Process Cleanup: $SUPPORTS_BG_PROCESS_CLEANUP | Skill Deadlock Fix: $SUPPORTS_SKILL_DEADLOCK_FIX"
-    log "INFO" "Parallel Tool Resilience: $SUPPORTS_PARALLEL_TOOL_RESILIENCE | Plan With Args: $SUPPORTS_PLAN_WITH_ARGS"
-    log "INFO" "Auto Memory Dir: $SUPPORTS_AUTO_MEMORY_DIR | Full Model IDs: $SUPPORTS_FULL_MODEL_IDS | Session End Timeout: $SUPPORTS_SESSION_END_TIMEOUT"
-    log "INFO" "Context Suggestions: $SUPPORTS_CONTEXT_SUGGESTIONS | Plugin Dir Override: $SUPPORTS_PLUGIN_DIR_OVERRIDE | Managed Policy Fix: $SUPPORTS_MANAGED_POLICY_FIX"
-    log "INFO" "MCP Elicitation: $SUPPORTS_MCP_ELICITATION | Elicitation Hooks: $SUPPORTS_ELICITATION_HOOKS | Worktree Sparse Paths: $SUPPORTS_WORKTREE_SPARSE_PATHS"
-    log "INFO" "Post Compact Hook: $SUPPORTS_POST_COMPACT_HOOK | Effort Command: $SUPPORTS_EFFORT_COMMAND | BG Partial Results: $SUPPORTS_BG_PARTIAL_RESULTS"
+    log "INFO" "Agent Model Override: $SUPPORTS_AGENT_MODEL_OVERRIDE | Effort Redesign: $SUPPORTS_EFFORT_REDESIGN | Disable Cron Env: $SUPPORTS_DISABLE_CRON_ENV"
+    log "INFO" "Model Overrides: $SUPPORTS_MODEL_OVERRIDES | Subagent Model Fix: $SUPPORTS_SUBAGENT_MODEL_FIX | Parallel Tool Resilience: $SUPPORTS_PARALLEL_TOOL_RESILIENCE"
+    log "INFO" "BG Process Cleanup: $SUPPORTS_BG_PROCESS_CLEANUP | Skill Deadlock Fix: $SUPPORTS_SKILL_DEADLOCK_FIX"
+    log "INFO" "Auto Memory Dir: $SUPPORTS_AUTO_MEMORY_DIR | Full Model IDs: $SUPPORTS_FULL_MODEL_IDS | Context Suggestions: $SUPPORTS_CONTEXT_SUGGESTIONS"
+    log "INFO" "Plugin Dir Override: $SUPPORTS_PLUGIN_DIR_OVERRIDE | MCP Elicitation: $SUPPORTS_MCP_ELICITATION | Worktree Sparse Paths: $SUPPORTS_WORKTREE_SPARSE_PATHS"
+    log "INFO" "Effort Command: $SUPPORTS_EFFORT_COMMAND | BG Partial Results: $SUPPORTS_BG_PARTIAL_RESULTS"
+    log "INFO" "Allow Read Sandbox: $SUPPORTS_ALLOW_READ_SANDBOX | SendMessage Auto Resume: $SUPPORTS_SENDMESSAGE_AUTO_RESUME | Agent No Resume Param: $SUPPORTS_AGENT_NO_RESUME_PARAM"
+    log "INFO" "Plugin Validate Frontmatter: $SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER | Branch Command: $SUPPORTS_BRANCH_COMMAND | BG Bash 5GB Kill: $SUPPORTS_BG_BASH_5GB_KILL"
 
     # v8.29.0: Context window control
     OCTOPUS_CONTEXT_WINDOW="${OCTOPUS_CONTEXT_WINDOW:-auto}"
@@ -1394,7 +1372,7 @@ resolve_provider_env() {
     for env_file in "$PWD/.env" "$HOME/.env"; do
         if [[ -f "$env_file" ]]; then
             local val
-            val=$(grep -E "^${var_name}=" "$env_file" 2>/dev/null | head -1 | cut -d= -f2- | sed 's/^["'\'']\|["'\''"]$//g')
+            val=$(grep -m1 -E "^${var_name}=" "$env_file" 2>/dev/null | cut -d= -f2- | sed 's/^["'\'']\|["'\''"]$//g')
             if [[ -n "$val" ]]; then
                 export "$var_name=$val"
                 log DEBUG "Resolved $var_name from $env_file (non-interactive shell fallback)"
@@ -1735,7 +1713,7 @@ resolve_octopus_model() {
     eval "_OCTO_MODEL_CACHE_${cache_key}=\"$resolved_model\""
     if command -v jq &>/dev/null; then
         local cache_json="{}"
-        [[ -f "$persistent_cache" ]] && cache_json=$(cat "$persistent_cache")
+        [[ -f "$persistent_cache" ]] && cache_json=$(<"$persistent_cache")
         echo "$cache_json" | jq --arg key "$cache_key" --arg val "$resolved_model" '.[$key] = $val' > "${persistent_cache}.tmp.$$" && mv "${persistent_cache}.tmp.$$" "$persistent_cache"
     fi
 
@@ -2135,7 +2113,8 @@ validate_model_allowed() {
     [[ -z "$allowlist" ]] && return 0  # No allowlist = all allowed
 
     # Check if model is in comma-separated allowlist
-    if echo ",$allowlist," | grep -Fc ",$model," >/dev/null 2>&1; then
+    # v9.5: bash builtin substring check (zero subshells, was echo|grep)
+    if [[ ",$allowlist," == *",$model,"* ]]; then
         return 0
     fi
 
@@ -2146,7 +2125,7 @@ validate_model_allowed() {
         # Try to find a model with matching capabilities that IS in the allowlist
         local capable
         capable=$(find_capable_fallback "$model" "$provider" 2>/dev/null) || true
-        if [[ -n "$capable" ]] && echo ",$allowlist," | grep -Fc ",$capable," >/dev/null 2>&1; then
+        if [[ -n "$capable" ]] && [[ ",$allowlist," == *",$capable,"* ]]; then
             fallback="$capable"
             log WARN "Capability-aware fallback: $fallback (matches blocked model's capabilities)"
         fi
@@ -2399,12 +2378,13 @@ parse_task_metrics() {
     local usage_block
     usage_block=$(echo "$output" | sed -n '/<usage>/,/<\/usage>/p' 2>/dev/null || true)
     if [[ -n "$usage_block" ]]; then
-        _PARSED_TOKENS=$(echo "$usage_block" | grep -oE 'total_tokens:\s*[0-9]+' | grep -oE '[0-9]+' || true)
-        _PARSED_TOOL_USES=$(echo "$usage_block" | grep -oE 'tool_uses:\s*[0-9]+' | grep -oE '[0-9]+' || true)
-        _PARSED_DURATION_MS=$(echo "$usage_block" | grep -oE 'duration_ms:\s*[0-9]+' | grep -oE '[0-9]+' || true)
+        # v9.5: bash regex extraction (zero subshells, was 4 echo|grep|grep chains)
+        [[ "$usage_block" =~ total_tokens:[[:space:]]*([0-9]+) ]] && _PARSED_TOKENS="${BASH_REMATCH[1]}" || _PARSED_TOKENS=""
+        [[ "$usage_block" =~ tool_uses:[[:space:]]*([0-9]+) ]] && _PARSED_TOOL_USES="${BASH_REMATCH[1]}" || _PARSED_TOOL_USES=""
+        [[ "$usage_block" =~ duration_ms:[[:space:]]*([0-9]+) ]] && _PARSED_DURATION_MS="${BASH_REMATCH[1]}" || _PARSED_DURATION_MS=""
         # v8.8: Parse OTel speed attribute (fast|standard) when available
         if [[ "$SUPPORTS_OTEL_SPEED" == "true" ]]; then
-            _PARSED_SPEED=$(echo "$usage_block" | grep -oE 'speed:\s*(fast|standard)' | grep -oE '(fast|standard)' || true)
+            [[ "$usage_block" =~ speed:[[:space:]]*(fast|standard) ]] && _PARSED_SPEED="${BASH_REMATCH[1]}" || _PARSED_SPEED=""
         fi
     fi
     [[ "$_PARSED_TOKENS" =~ ^[0-9]+$ ]] || _PARSED_TOKENS=""
@@ -2648,7 +2628,7 @@ display_workflow_cost_estimate() {
     echo -e "  ${YELLOW}🟡 Gemini${NC} (~${num_gemini_calls} requests): ${gemini_status}"
     # Dynamic Claude model name based on workflow agents
     local claude_model_label="Sonnet 4.6"
-    if echo "${WORKFLOW_AGENTS:-}" | grep -q "claude-opus"; then
+    if [[ "${WORKFLOW_AGENTS:-}" == *"claude-opus"* ]]; then
         claude_model_label="Opus 4.6"
     fi
     echo -e "  ${BLUE}🔵 Claude${NC} ($claude_model_label): ${DIM}Included in Claude Code subscription${NC}"
@@ -3395,7 +3375,7 @@ get_agent_description() {
     fi
 
     if [[ -f "$agent_file" ]]; then
-        grep "^description:" "$agent_file" 2>/dev/null | head -1 | sed 's/description:[[:space:]]*//' | cut -c1-80
+        grep -m1 "^description:" "$agent_file" 2>/dev/null | sed 's/description:[[:space:]]*//' | cut -c1-80
     else
         echo "Specialized agent"
     fi
@@ -3479,10 +3459,17 @@ detect_context() {
     
     # Count matches
     local knowledge_matches
-    knowledge_matches=$(echo "$prompt_lower" | grep -oE "($knowledge_patterns)" 2>/dev/null | wc -l | tr -d ' ')
-    
-    local dev_matches
-    dev_matches=$(echo "$prompt_lower" | grep -oE "($dev_patterns)" 2>/dev/null | wc -l | tr -d ' ')
+    # v9.5: count matches via bash loop instead of echo|grep|wc pipeline (zero subshells)
+    knowledge_matches=0
+    local _km_pat
+    for _km_pat in ${knowledge_patterns//|/ }; do
+        [[ "$prompt_lower" == *"$_km_pat"* ]] && ((knowledge_matches++)) || true
+    done
+
+    local dev_matches=0
+    for _km_pat in ${dev_patterns//|/ }; do
+        [[ "$prompt_lower" == *"$_km_pat"* ]] && ((dev_matches++)) || true
+    done
     
     ((dev_score += dev_matches * 2))
     ((knowledge_score += knowledge_matches * 2))
@@ -3912,7 +3899,8 @@ LOCKED_PROVIDERS=""
 
 lock_provider() {
     local provider="$1"
-    if ! echo "$LOCKED_PROVIDERS" | grep -qw "$provider"; then
+    # v9.5: bash builtin word check (zero subshells)
+    if [[ " $LOCKED_PROVIDERS " != *" $provider "* ]]; then
         LOCKED_PROVIDERS="${LOCKED_PROVIDERS:+$LOCKED_PROVIDERS }$provider"
         log WARN "Provider locked out: $provider (will not self-revise)"
     fi
@@ -3920,7 +3908,7 @@ lock_provider() {
 
 is_provider_locked() {
     local provider="$1"
-    echo "$LOCKED_PROVIDERS" | grep -qw "$provider"
+    [[ " $LOCKED_PROVIDERS " == *" $provider "* ]]
 }
 
 get_alternate_provider() {
@@ -4256,11 +4244,12 @@ detect_response_mode() {
     fi
 
     # User signal detection
-    if echo "$prompt_lower" | grep -qwE "quick|fast|simple|brief|short"; then
+    # v9.5: bash regex (zero subshells, was echo|grep)
+    if [[ "$prompt_lower" =~ (quick|fast|simple|brief|short) ]]; then
         echo "direct"
         return
     fi
-    if echo "$prompt_lower" | grep -qwE "thorough|comprehensive|complete|detailed|in-depth|exhaustive"; then
+    if [[ "$prompt_lower" =~ (thorough|comprehensive|complete|detailed|in-depth|exhaustive) ]]; then
         echo "full"
         return
     fi
@@ -4298,8 +4287,9 @@ detect_response_mode() {
     local tech_score=0
     local tech_keywords="api database schema migration authentication authorization security performance optimization architecture microservice docker kubernetes terraform infrastructure pipeline deployment integration webhook endpoint middleware"
 
+    # v9.5: bash builtin word boundary check (zero subshells per iteration, was echo|grep per keyword)
     for keyword in $tech_keywords; do
-        if echo "$prompt_lower" | grep -qw "$keyword"; then
+        if [[ " $prompt_lower " == *" $keyword "* ]]; then
             ((tech_score++)) || true
         fi
     done
@@ -4431,16 +4421,20 @@ search_observations() {
         if [[ "$line" == "### type:"* ]]; then
             # Process previous entry if it matches
             if [[ -n "$current_entry" && $current_importance -ge $min_importance ]]; then
-                if echo "$current_entry" | grep -qi "$keywords"; then
+                # v9.5: bash case-insensitive match (zero subshells, was echo|grep -qi)
+                shopt -s nocasematch
+                if [[ "$current_entry" == *"$keywords"* ]]; then
                     matches="${matches}${current_entry}
 ---
 "
                 fi
+                shopt -u nocasematch
             fi
             current_entry="$line"
             current_importance=0
         elif [[ "$line" == "**Importance:"* ]]; then
-            current_importance=$(echo "$line" | grep -o '[0-9]*' | head -1)
+            # v9.5: bash regex (zero subshells, was echo|grep -o|head)
+            [[ "$line" =~ ([0-9]+) ]] && current_importance="${BASH_REMATCH[1]}" || current_importance=0
             current_entry="${current_entry}
 ${line}"
         elif [[ "$line" != "---" ]]; then
@@ -4451,9 +4445,11 @@ ${line}"
 
     # Process last entry
     if [[ -n "$current_entry" && $current_importance -ge $min_importance ]]; then
-        if echo "$current_entry" | grep -qi "$keywords"; then
+        shopt -s nocasematch
+        if [[ "$current_entry" == *"$keywords"* ]]; then
             matches="${matches}${current_entry}"
         fi
+        shopt -u nocasematch
     fi
 
     if [[ -n "$matches" ]]; then
@@ -4684,47 +4680,50 @@ score_cross_model_review() {
 
     local sec=5 rel=5 perf=5 acc=5
 
-    # Try explicit "Security: 8/10" patterns first
-    local explicit_sec explicit_rel explicit_perf explicit_acc
-    explicit_sec=$(echo "$review_output" | grep -oi 'security[: ]*[0-9]*/10' | head -1 | grep -o '[0-9]*/' | tr -d '/')
-    explicit_rel=$(echo "$review_output" | grep -oi 'reliability[: ]*[0-9]*/10' | head -1 | grep -o '[0-9]*/' | tr -d '/')
-    explicit_perf=$(echo "$review_output" | grep -oi 'performance[: ]*[0-9]*/10' | head -1 | grep -o '[0-9]*/' | tr -d '/')
-    explicit_acc=$(echo "$review_output" | grep -oi 'accessib[a-z]*[: ]*[0-9]*/10' | head -1 | grep -o '[0-9]*/' | tr -d '/')
+    # v9.5: Lowercase once for heuristic matching (zero forks via pipe-once instead of 12 echo|grep chains)
+    local rl
+    rl=$(printf '%s' "$review_output" | tr '[:upper:]' '[:lower:]')
 
-    [[ -n "$explicit_sec" ]] && sec="$explicit_sec"
-    [[ -n "$explicit_rel" ]] && rel="$explicit_rel"
-    [[ -n "$explicit_perf" ]] && perf="$explicit_perf"
-    [[ -n "$explicit_acc" ]] && acc="$explicit_acc"
+    # Try explicit "Security: 8/10" patterns first (bash regex — zero forks)
+    # Note: regex must be in variables for bash 3.2 compatibility
+    local _re_sec='[Ss]ecurity[: ]*([0-9]+)/10'
+    local _re_rel='[Rr]eliability[: ]*([0-9]+)/10'
+    local _re_perf='[Pp]erformance[: ]*([0-9]+)/10'
+    local _re_acc='[Aa]ccessib[a-z]*[: ]*([0-9]+)/10'
+    [[ "$review_output" =~ $_re_sec ]] && sec="${BASH_REMATCH[1]}"
+    [[ "$review_output" =~ $_re_rel ]] && rel="${BASH_REMATCH[1]}"
+    [[ "$review_output" =~ $_re_perf ]] && perf="${BASH_REMATCH[1]}"
+    [[ "$review_output" =~ $_re_acc ]] && acc="${BASH_REMATCH[1]}"
 
-    # Heuristic fallback for missing dimensions
-    if [[ -z "$explicit_sec" ]]; then
-        if echo "$review_output" | grep -qi "vulnerab\|injection\|xss\|csrf\|insecure"; then
+    # Heuristic fallback for missing dimensions (zero forks via [[ glob ]])
+    if [[ "$sec" == 5 ]]; then
+        if [[ "$rl" == *vulnerab* || "$rl" == *injection* || "$rl" == *xss* || "$rl" == *csrf* || "$rl" == *insecure* ]]; then
             sec=4
-        elif echo "$review_output" | grep -qi "secure\|no.vulnerab\|safe"; then
+        elif [[ "$rl" == *secure* || "$rl" == *"no vulnerab"* || "$rl" == *safe* ]]; then
             sec=8
         fi
     fi
 
-    if [[ -z "$explicit_rel" ]]; then
-        if echo "$review_output" | grep -qi "crash\|unstable\|race.condition\|deadlock"; then
+    if [[ "$rel" == 5 ]]; then
+        if [[ "$rl" == *crash* || "$rl" == *unstable* || "$rl" == *"race condition"* || "$rl" == *deadlock* ]]; then
             rel=4
-        elif echo "$review_output" | grep -qi "robust\|reliable\|stable\|resilient"; then
+        elif [[ "$rl" == *robust* || "$rl" == *reliable* || "$rl" == *stable* || "$rl" == *resilient* ]]; then
             rel=8
         fi
     fi
 
-    if [[ -z "$explicit_perf" ]]; then
-        if echo "$review_output" | grep -qi "slow\|bottleneck\|n+1\|leak"; then
+    if [[ "$perf" == 5 ]]; then
+        if [[ "$rl" == *slow* || "$rl" == *bottleneck* || "$rl" == *"n+1"* || "$rl" == *leak* ]]; then
             perf=4
-        elif echo "$review_output" | grep -qi "fast\|optimized\|efficient\|performant"; then
+        elif [[ "$rl" == *optimized* || "$rl" == *efficient* || "$rl" == *performant* ]]; then
             perf=8
         fi
     fi
 
-    if [[ -z "$explicit_acc" ]]; then
-        if echo "$review_output" | grep -qi "inaccessib\|no.aria\|missing.alt"; then
+    if [[ "$acc" == 5 ]]; then
+        if [[ "$rl" == *inaccessib* || "$rl" == *"no aria"* || "$rl" == *"missing alt"* ]]; then
             acc=4
-        elif echo "$review_output" | grep -qi "accessible\|wcag\|aria\|a11y"; then
+        elif [[ "$rl" == *accessible* || "$rl" == *wcag* || "$rl" == *aria* || "$rl" == *a11y* ]]; then
             acc=8
         fi
     fi
@@ -5107,7 +5106,8 @@ earn_skill() {
 
     # Sanitize name for filename
     local safe_name
-    safe_name=$(echo "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-//;s/-$//')
+    # v9.5: consolidated 4-process pipe (echo|tr|sed|sed|sed) into 2 processes (printf|tr + single sed)
+    safe_name=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g;s/--*/-/g;s/^-//;s/-$//')
     local skill_file="$skills_dir/${safe_name}.md"
 
     local timestamp
@@ -6316,6 +6316,8 @@ usage() {
     fi
 }
 
+_LOG_TS=""
+_LOG_TS_AT=0
 log() {
     local level="$1"
     shift
@@ -6324,15 +6326,17 @@ log() {
     # Performance: Skip expensive operations for disabled DEBUG logs
     [[ "$level" == "DEBUG" && "$VERBOSE" != "true" && "$OCTOPUS_DEBUG" != "true" ]] && return 0
 
-    local msg="$*"
-    local timestamp
-    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    # v9.5: Cache timestamp — refresh every 10s via SECONDS builtin (zero-fork staleness check)
+    if [[ -z "$_LOG_TS" ]] || (( SECONDS - _LOG_TS_AT >= 10 )); then
+        _LOG_TS=$(date '+%Y-%m-%d %H:%M:%S')
+        _LOG_TS_AT=$SECONDS
+    fi
 
     case "$level" in
-        INFO)  echo -e "${BLUE}[$timestamp]${NC} ${GREEN}INFO${NC}: $msg" >&2 ;;
-        WARN)  echo -e "${BLUE}[$timestamp]${NC} ${YELLOW}WARN${NC}: $msg" >&2 ;;
-        ERROR) echo -e "${BLUE}[$timestamp]${NC} ${RED}ERROR${NC}: $msg" >&2 ;;
-        DEBUG) echo -e "${BLUE}[$timestamp]${NC} ${CYAN}DEBUG${NC}: $msg" >&2 ;;
+        INFO)  echo -e "${BLUE}[$_LOG_TS]${NC} ${GREEN}INFO${NC}: $*" >&2 ;;
+        WARN)  echo -e "${BLUE}[$_LOG_TS]${NC} ${YELLOW}WARN${NC}: $*" >&2 ;;
+        ERROR) echo -e "${BLUE}[$_LOG_TS]${NC} ${RED}ERROR${NC}: $*" >&2 ;;
+        DEBUG) echo -e "${BLUE}[$_LOG_TS]${NC} ${CYAN}DEBUG${NC}: $*" >&2 ;;
     esac
 }
 
@@ -8699,19 +8703,19 @@ check_claude_version() {
     # Try to get version from claude command
     if command -v claude &>/dev/null; then
         # Try different version flag formats
-        current_version=$(claude --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        current_version=$(claude --version 2>/dev/null | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
         if [[ -z "$current_version" ]]; then
             # Try alternative: claude version
-            current_version=$(claude version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            current_version=$(claude version 2>/dev/null | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
         fi
 
         if [[ -z "$current_version" ]]; then
             # Try checking package.json if installed via npm
             if [[ -f "/usr/local/lib/node_modules/@anthropic/claude-code/package.json" ]]; then
-                current_version=$(grep '"version"' /usr/local/lib/node_modules/@anthropic/claude-code/package.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                current_version=$(grep '"version"' /usr/local/lib/node_modules/@anthropic/claude-code/package.json | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
             elif [[ -f "$HOME/.npm-global/lib/node_modules/@anthropic/claude-code/package.json" ]]; then
-                current_version=$(grep '"version"' "$HOME/.npm-global/lib/node_modules/@anthropic/claude-code/package.json" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                current_version=$(grep '"version"' "$HOME/.npm-global/lib/node_modules/@anthropic/claude-code/package.json" | grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+')
             fi
         fi
 
@@ -11044,7 +11048,7 @@ has_curated_agents() {
 parse_yaml_value() {
     local file="$1"
     local key="$2"
-    grep "^[[:space:]]*${key}:" "$file" 2>/dev/null | head -1 | sed "s/^[[:space:]]*${key}:[[:space:]]*//" | tr -d '"'
+    grep -m1 "^[[:space:]]*${key}:" "$file" 2>/dev/null | sed "s/^[[:space:]]*${key}:[[:space:]]*//" | tr -d '"'
 }
 
 # Get agent config value
@@ -11328,7 +11332,7 @@ update_ralph_state() {
 # Get current ralph iteration count
 get_ralph_iteration() {
     [[ ! -f "$RALPH_STATE_FILE" ]] && echo "0" && return
-    grep "^iteration:" "$RALPH_STATE_FILE" | head -1 | awk '{print $2}'
+    grep -m1 "^iteration:" "$RALPH_STATE_FILE" | awk '{print $2}'
 }
 
 # Run agent with ralph-wiggum style iteration
@@ -11888,7 +11892,7 @@ resume_agent() {
             --arg phase "${phase:-none}" \
             --arg prompt "$prompt" \
             --arg result_file "${RESULTS_DIR}/claude-${task_id}.md" \
-            '{dispatch_method: "resume", agent_id: $agent_id,
+            '{dispatch_method: "send_message", agent_id: $agent_id,
               task_id: $task_id, role: $role, phase: $phase,
               prompt: $prompt, result_file: $result_file,
               dispatched_at: now | todate}' \
@@ -11912,7 +11916,7 @@ resume_agent() {
     echo "# Resumed Agent: $agent_id" >> "$result_file"
     echo "# Role: ${role:-none}" >> "$result_file"
     echo "# Phase: ${phase:-none}" >> "$result_file"
-    echo "# Dispatch: Agent Teams (resume)" >> "$result_file"
+    echo "# Dispatch: Agent Teams (SendMessage)" >> "$result_file"
     echo "# Started: $(date)" >> "$result_file"
     echo "" >> "$result_file"
 
@@ -12418,7 +12422,7 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
             # v8.16: Check if failure is auth-related and retryable
             if [[ $exit_code -ne 0 ]] && [[ $auth_attempt -lt $max_auth_retries ]]; then
                 local stderr_content=""
-                [[ -s "$temp_errors" ]] && stderr_content=$(cat "$temp_errors")
+                [[ -s "$temp_errors" ]] && stderr_content=$(<"$temp_errors")
                 if [[ "$stderr_content" == *"unauthorized"* ]] || \
                    [[ "$stderr_content" == *"401"* ]] || \
                    [[ "$stderr_content" == *"auth"* ]] || \
@@ -12573,8 +12577,8 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
             # v8.19.0: Record timeout error and save checkpoint
             record_error "$agent_type" "$prompt" "Agent timed out" "124" "spawn_agent timeout" 2>/dev/null || true
             local timeout_partial=""
-            [[ -s "$temp_output" ]] && timeout_partial=$(cat "$temp_output")
-            [[ -z "$timeout_partial" && -s "$raw_output" ]] && timeout_partial=$(cat "$raw_output")
+            [[ -s "$temp_output" ]] && timeout_partial=$(<"$temp_output")
+            [[ -z "$timeout_partial" && -s "$raw_output" ]] && timeout_partial=$(<"$raw_output")
             save_agent_checkpoint "$task_id" "$agent_type" "${phase:-unknown}" "$timeout_partial" 2>/dev/null || true
 
             # Mark agent as timeout (partial success) (v7.19.0)
@@ -12613,8 +12617,8 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
 
             # v8.19.0: Save checkpoint for crash-recovery
             local partial_for_checkpoint=""
-            [[ -s "$temp_output" ]] && partial_for_checkpoint=$(cat "$temp_output")
-            [[ -z "$partial_for_checkpoint" && -s "$raw_output" ]] && partial_for_checkpoint=$(cat "$raw_output")
+            [[ -s "$temp_output" ]] && partial_for_checkpoint=$(<"$temp_output")
+            [[ -z "$partial_for_checkpoint" && -s "$raw_output" ]] && partial_for_checkpoint=$(<"$raw_output")
             save_agent_checkpoint "$task_id" "$agent_type" "${phase:-unknown}" "$partial_for_checkpoint" 2>/dev/null || true
 
             # Mark agent as failed (v7.16.0 Feature 2)
@@ -15748,6 +15752,80 @@ doctor_check_skills() {
             "CC v2.1.76 --plugin-dir accepts one path per flag (use repeated flags for multiple)" \
             "If using multiple plugin dirs, change --plugin-dir 'a b' to --plugin-dir a --plugin-dir b"
     fi
+
+    # v9.5: CC v2.1.77+ doctor tips
+    if [[ "$SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER" == "true" ]]; then
+        doctor_add "plugin-validate" "skills" "info" \
+            "CC v2.1.77 claude plugin validate checks frontmatter + hooks.json schema" \
+            "Run 'claude plugin validate .' to catch YAML parse errors and schema violations in skills, agents, and hooks"
+    fi
+
+    if [[ "$SUPPORTS_ALLOW_READ_SANDBOX" == "true" ]]; then
+        doctor_add "allow-read-sandbox" "skills" "info" \
+            "CC v2.1.77 allowRead sandbox setting available" \
+            "Use allowRead in sandbox settings to re-allow read access within denyRead regions"
+    fi
+
+    if [[ "$SUPPORTS_BRANCH_COMMAND" == "true" ]]; then
+        doctor_add "branch-command" "skills" "info" \
+            "CC v2.1.77 /fork renamed to /branch" \
+            "Use /branch to create conversation branches (the /fork alias still works)"
+    fi
+
+    if [[ "$SUPPORTS_AGENT_NO_RESUME_PARAM" == "true" ]]; then
+        doctor_add "sendmessage-resume" "skills" "pass" \
+            "CC v2.1.77 agent resume uses SendMessage (Agent resume param removed)" \
+            "Octopus resume commands use SendMessage for agent continuation automatically"
+    fi
+
+    if [[ "$SUPPORTS_BG_BASH_5GB_KILL" == "true" ]]; then
+        doctor_add "bg-bash-5gb" "skills" "info" \
+            "CC v2.1.77 background bash processes killed at 5GB output" \
+            "Long-running background Bash tasks producing >5GB will be terminated. Agent tool dispatches are unaffected."
+    fi
+
+    # v9.5: Wired medium flags as doctor tips (previously banner-only or dead)
+    if [[ "$SUPPORTS_COPY_INDEX" == "true" ]]; then
+        doctor_add "copy-index" "skills" "info" \
+            "CC v2.1.77 /copy N copies the Nth-latest response" \
+            "Use /copy 3 to copy the third-most-recent assistant response to clipboard"
+    fi
+
+    if [[ "$SUPPORTS_COMPOUND_BASH_PERMISSION_FIX" == "true" ]]; then
+        doctor_add "compound-bash-fix" "skills" "info" \
+            "CC v2.1.77 compound bash always-allow applies per sub-command" \
+            "Each sub-command in a compound bash expression is checked individually against always-allow rules"
+    fi
+
+    if [[ "$SUPPORTS_RESUME_TRUNCATION_FIX" == "true" ]]; then
+        doctor_add "resume-truncation-fix" "skills" "info" \
+            "CC v2.1.77 --resume no longer truncates history" \
+            "Long conversations resumed with --resume now preserve full history instead of truncating"
+    fi
+
+    if [[ "$SUPPORTS_PRETOOLUSE_DENY_PRIORITY" == "true" ]]; then
+        doctor_add "pretooluse-deny-priority" "skills" "info" \
+            "CC v2.1.77 PreToolUse deny rules always take priority" \
+            "Enterprise deny rules in PreToolUse hooks now override user allow and skill allowed-tools"
+    fi
+
+    if [[ "$SUPPORTS_SENDMESSAGE_AUTO_RESUME" == "true" ]]; then
+        doctor_add "sendmessage-auto-resume" "skills" "info" \
+            "CC v2.1.77 SendMessage auto-resumes stopped agents" \
+            "Stopped agents are automatically resumed when you send them a message via SendMessage"
+    fi
+
+    if [[ "$SUPPORTS_PARALLEL_TOOL_RESILIENCE" == "true" ]]; then
+        doctor_add "parallel-tool-resilience" "skills" "info" \
+            "CC v2.1.72 parallel tool failures handled gracefully" \
+            "A failed Read/WebFetch/Glob no longer cancels sibling parallel tool calls"
+    fi
+
+    if [[ "$SUPPORTS_BG_PROCESS_CLEANUP" == "true" ]]; then
+        doctor_add "bg-process-cleanup" "skills" "info" \
+            "CC v2.1.73 background bash auto-cleaned from subagents" \
+            "Background bash processes spawned by subagents are automatically cleaned up on agent exit"
+    fi
 }
 
 # --- Category 8: Conflicts ---
@@ -16907,7 +16985,7 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
 
         if [[ $exit_code -ne 0 ]] && [[ $auth_attempt -lt $max_auth_retries ]]; then
             local stderr_content=""
-            [[ -s "$temp_errors" ]] && stderr_content=$(cat "$temp_errors")
+            [[ -s "$temp_errors" ]] && stderr_content=$(<"$temp_errors")
             if [[ "$stderr_content" == *"unauthorized"* ]] || \
                [[ "$stderr_content" == *"401"* ]] || \
                [[ "$stderr_content" == *"auth"* ]] || \
