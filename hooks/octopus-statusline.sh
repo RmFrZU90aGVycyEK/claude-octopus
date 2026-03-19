@@ -50,9 +50,9 @@ PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1
 _SESSION_ID=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null)
 _SESSION_ID="${_SESSION_ID:-${CLAUDE_SESSION_ID:-unknown}}"
 _BRIDGE="/tmp/octopus-ctx-${_SESSION_ID}.json"
-printf '{"session_id":"%s","used_pct":%s,"remaining_pct":%s,"ts":%s}\n' \
+(umask 0177; printf '{"session_id":"%s","used_pct":%s,"remaining_pct":%s,"ts":%s}\n' \
     "$_SESSION_ID" "$PCT" "$((100-PCT))" "$(date +%s)" \
-    > "$_BRIDGE" 2>/dev/null || true
+    > "$_BRIDGE") 2>/dev/null || true
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 
 # v8.35.0: Extract worktree info (Claude Code v2.1.69+ provides worktree field)
@@ -117,7 +117,7 @@ if [[ -n "$PHASE" && "$PHASE" != "null" ]]; then
     esac
 
     # v8.35.0: Append worktree branch when running in isolation
-    local wt_suffix=""
+    wt_suffix=""
     if [[ -n "$WORKTREE_BRANCH" ]]; then
         wt_suffix=" | 🌿 ${WORKTREE_BRANCH}"
     fi
@@ -125,7 +125,7 @@ if [[ -n "$PHASE" && "$PHASE" != "null" ]]; then
     echo -e "${CYAN}[🐙 Octopus]${RESET} ${PHASE_EMOJI} ${PHASE} | ${WARN_PREFIX}${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${YELLOW}${COST_FMT}${RESET}${wt_suffix}"
 else
     # No active workflow - compact display
-    local wt_suffix=""
+    wt_suffix=""
     if [[ -n "$WORKTREE_BRANCH" ]]; then
         wt_suffix=" | 🌿 ${WORKTREE_BRANCH}"
     fi

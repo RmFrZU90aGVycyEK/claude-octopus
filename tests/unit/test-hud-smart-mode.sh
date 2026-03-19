@@ -184,11 +184,11 @@ else
     fail "HUD uses input.session_id for bridge" "still using only env var"
 fi
 
-# Context-awareness should have bridge fallback for missing CLAUDE_SESSION_ID
-if grep -q 'ls -t.*octopus-ctx' "$HOOKS_DIR/context-awareness.sh" 2>/dev/null; then
-    pass "Context-awareness has bridge file fallback"
+# Context-awareness should exit when session ID is unknown (no unsafe /tmp glob)
+if grep -q 'SESSION.*unknown.*exit 0' "$HOOKS_DIR/context-awareness.sh" 2>/dev/null; then
+    pass "Context-awareness exits when session ID unknown"
 else
-    fail "Context-awareness has bridge file fallback" "no ls -t fallback pattern"
+    fail "Context-awareness exits when session ID unknown" "missing unknown session guard"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -20,7 +20,7 @@
 // Caching: Rate limits cached 60s, version cached 1h
 // Fallback: Outputs empty on error (bash statusline handles it)
 
-import { existsSync, readFileSync, writeFileSync, statSync, openSync, readSync, closeSync, mkdirSync, createReadStream } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, statSync, openSync, readSync, closeSync, mkdirSync, renameSync, createReadStream } from "node:fs";
 import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { createInterface } from "node:readline";
@@ -106,9 +106,14 @@ async function readStdin() {
   const chunks = [];
   try {
     process.stdin.setEncoding("utf8");
-    for await (const chunk of process.stdin) chunks.push(chunk);
-    const raw = chunks.join("");
-    return raw.trim() ? JSON.parse(raw) : null;
+    // Race stdin read against a 5s timeout to prevent indefinite hang
+    const stdinRead = (async () => {
+      for await (const chunk of process.stdin) chunks.push(chunk);
+      const raw = chunks.join("");
+      return raw.trim() ? JSON.parse(raw) : null;
+    })();
+    const timeout = new Promise((resolve) => setTimeout(() => resolve(null), 5000));
+    return await Promise.race([stdinRead, timeout]);
   } catch {
     return null;
   }
@@ -304,7 +309,10 @@ function writeBackCredentials(creds) {
     target.accessToken = creds.accessToken;
     if (creds.expiresAt != null) target.expiresAt = creds.expiresAt;
     if (creds.refreshToken) target.refreshToken = creds.refreshToken;
-    writeFileSync(CRED_PATH, JSON.stringify(parsed, null, 2));
+    // Atomic write: temp file + rename to prevent concurrent session clobber
+    const tmp = CRED_PATH + ".tmp." + process.pid;
+    writeFileSync(tmp, JSON.stringify(parsed, null, 2), { mode: 0o600 });
+    renameSync(tmp, CRED_PATH);
   } catch { /* */ }
 }
 
@@ -325,7 +333,10 @@ function readUsageCache() {
 function writeUsageCache(data, error = false) {
   try {
     if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
-    writeFileSync(USAGE_CACHE_PATH, JSON.stringify({ timestamp: Date.now(), data, error }));
+    // Atomic write to prevent torn JSON from concurrent sessions
+    const tmp = USAGE_CACHE_PATH + ".tmp." + process.pid;
+    writeFileSync(tmp, JSON.stringify({ timestamp: Date.now(), data, error }));
+    renameSync(tmp, USAGE_CACHE_PATH);
   } catch { /* */ }
 }
 
@@ -575,7 +586,7 @@ function colorForPercent(pct, warnAt = 70, critAt = 85) {
 }
 
 function contextBar(pct) {
-  const filled = Math.round(pct / 10);
+  const filled = Math.min(10, Math.max(0, Math.round(pct / 10)));
   const empty = 10 - filled;
   const color = colorForPercent(pct);
   return `${color}${"▰".repeat(filled)}${"▱".repeat(empty)} ${pct}%${C.reset}`;
