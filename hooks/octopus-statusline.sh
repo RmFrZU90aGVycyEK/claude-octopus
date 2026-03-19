@@ -15,8 +15,13 @@
 
 set -euo pipefail
 
-# Read stdin once and store it
-input=$(timeout 3 cat 2>/dev/null || true); [[ -z "$input" ]] && input='{}'
+# Read stdin once and store it (use timeout if available, plain cat otherwise)
+if command -v timeout &>/dev/null; then
+    input=$(timeout 3 cat 2>/dev/null || true)
+else
+    input=$(cat 2>/dev/null || true)
+fi
+[[ -z "$input" ]] && input='{}'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HUD_MJS="${SCRIPT_DIR}/octopus-hud.mjs"
@@ -41,10 +46,12 @@ SESSION_FILE="${HOME}/.claude-octopus/session.json"
 MODEL=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 
-# Context bridge for agent awareness
-_BRIDGE="/tmp/octopus-ctx-${CLAUDE_SESSION_ID:-unknown}.json"
+# Context bridge for agent awareness — extract session_id from stdin JSON
+_SESSION_ID=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null)
+_SESSION_ID="${_SESSION_ID:-${CLAUDE_SESSION_ID:-unknown}}"
+_BRIDGE="/tmp/octopus-ctx-${_SESSION_ID}.json"
 printf '{"session_id":"%s","used_pct":%s,"remaining_pct":%s,"ts":%s}\n' \
-    "${CLAUDE_SESSION_ID:-unknown}" "$PCT" "$((100-PCT))" "$(date +%s)" \
+    "$_SESSION_ID" "$PCT" "$((100-PCT))" "$(date +%s)" \
     > "$_BRIDGE" 2>/dev/null || true
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 

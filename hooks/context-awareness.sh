@@ -12,11 +12,20 @@
 
 set -euo pipefail
 
-# Read stdin (required by hook protocol)
-timeout 3 cat > /dev/null 2>&1 || true
+# Read stdin (required by hook protocol — drain to prevent SIGPIPE)
+cat > /dev/null 2>&1 || true
 
 SESSION="${CLAUDE_SESSION_ID:-unknown}"
 BRIDGE="/tmp/octopus-ctx-${SESSION}.json"
+
+# Fallback: if env var wasn't set, find the most recent bridge file
+if [[ ! -f "$BRIDGE" || "$SESSION" == "unknown" ]]; then
+    BRIDGE=$(ls -t /tmp/octopus-ctx-*.json 2>/dev/null | head -1)
+    [[ -n "$BRIDGE" ]] || exit 0
+    # Extract session ID from the filename for debounce/severity files
+    SESSION=$(basename "$BRIDGE" .json | sed 's/^octopus-ctx-//')
+fi
+
 DEBOUNCE_FILE="/tmp/octopus-ctx-debounce-${SESSION}.count"
 LAST_SEVERITY_FILE="/tmp/octopus-ctx-severity-${SESSION}.level"
 SESSION_FILE="${HOME}/.claude-octopus/session.json"

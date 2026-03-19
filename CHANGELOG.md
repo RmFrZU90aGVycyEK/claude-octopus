@@ -1,3 +1,18 @@
+## [9.7.2] - 2026-03-19
+
+### Added
+
+- **Smart HUD columns**: `smartColumns()` auto-detects context and adjusts visible columns — hides Cost for OAuth subscription users, shows Cache/Session/Changes/Tokens only when data is meaningful. Column factory pattern ensures config-ordered rendering. `"smart": true` is the default; set `"smart": false` in `.hud-config.jsonc` for manual control.
+- **Octo brand column**: New `Octo:` column (always first) displays octopus icon, plugin version, and effort level dot. Model column moved to second position, Context column anchors the end.
+- **Context bridge session_id fix**: Both statusline hooks now extract `session_id` from stdin JSON instead of relying on `CLAUDE_SESSION_ID` env var (which isn't set for statusLine commands). Context-awareness hook falls back to finding the most recent bridge file when env var is missing.
+- `test-hud-smart-mode.sh` — 31 tests across 5 groups covering timeout fallback, smart mode, Octo column, context bridge, and functional HUD output.
+
+### Fixed
+
+- **Timeout fallback for macOS**: All 6 hook files now check `command -v timeout` before using GNU `timeout`. Falls back to plain `cat` when `timeout` (GNU coreutils) isn't installed — fixes silent stdin read failures on stock macOS that caused model showing "unknown" and 0% context in the statusline.
+
+---
+
 ## [9.6.1] - 2026-03-19
 
 ### Added

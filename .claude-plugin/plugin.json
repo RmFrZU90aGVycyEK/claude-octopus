@@ -1,7 +1,7 @@
 {
   "name": "octo",
-  "version": "9.6.1",
-  "description": "Multi-tentacled orchestrator using Double Diamond methodology. (v9.6.1) Enhanced HUD: async statusline with 5h/7d rate limit tracking, cache hit rate, agent trees, configurable columns, Tailwind color palette, vertical/horizontal layouts, version check. 32 expert personas, 40 commands, 50 skills. Commands use '/octo:*', including the '/octo:auto' smart router. Run /octo:setup for guided setup.",
+  "version": "9.7.2",
+  "description": "Multi-tentacled orchestrator using Double Diamond methodology. (v9.7.2) Smart HUD with context-aware columns, Octo brand column, macOS timeout fix. Auto-detects OAuth vs API-key billing, shows Cache/Session/Changes/Tokens contextually. 32 expert personas, 40 commands, 50 skills. Commands use '/octo:*', including the '/octo:auto' smart router. Run /octo:setup for guided setup.",
   "author": {
     "name": "nyldn"
   },

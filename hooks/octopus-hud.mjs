@@ -37,6 +37,14 @@ const VERSION_CACHE_PATH = join(CACHE_DIR, "version-check.json");
 const CONFIG_PATH = join(HOME, ".claude-octopus", ".hud-config.jsonc");
 const CRED_PATH = join(HOME, ".claude", ".credentials.json");
 
+// Octopus plugin version — read from package.json at startup
+const SCRIPT_DIR = dirname(new URL(import.meta.url).pathname);
+let OCTO_VERSION = "";
+try {
+  const pkg = JSON.parse(readFileSync(join(SCRIPT_DIR, "..", "package.json"), "utf-8"));
+  OCTO_VERSION = pkg.version || "";
+} catch { /* */ }
+
 const OAUTH_CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e";
 const CACHE_TTL_MS = 60_000;           // 60s cache for usage API
 const CACHE_TTL_FAILURE_MS = 15_000;   // 15s on failure
@@ -67,13 +75,14 @@ const C = {
 
 // All configurable columns
 const ALL_COLUMNS = [
-  "5h Usage", "7d Usage", "Context", "Cost", "Cache", "Model",
+  "Octo", "5h Usage", "7d Usage", "Context", "Cost", "Cache", "Model",
   "Session", "Changes", "Tokens", "Output Tokens", "API Time", "Version",
   "5h Reset", "7d Reset",
 ];
 
 // Default ON/OFF per column
 const SECTION_DEFAULTS = {
+  "Octo": true,
   "5h Usage": true, "7d Usage": true, "Context": true, "Cost": true, "Model": true,
   "Cache": false, "Version": false,
   "Session": false, "Changes": false, "Tokens": false, "Output Tokens": false,
@@ -114,20 +123,87 @@ function parseJsonc(text) {
   return JSON.parse(stripped);
 }
 
-function readConfig() {
+// Smart column selection — adapts to context signals
+// input: statusline stdin data, usage: rate limit API data
+function smartColumns(input, usage) {
+  const cols = ["Octo", "Model"]; // Brand + model always first
+  // OAuth subscription: true if usage API returned data OR OAuth credentials exist
+  const isOAuth = !!usage || !!getCredentials();
+  const cost = input?.cost;
+  const contextPct = getContextPercent(input);
+  const cacheRate = cacheHitRate(input);
+  const added = cost?.total_lines_added ?? 0;
+  const removed = cost?.total_lines_removed ?? 0;
+  const durationMs = cost?.total_duration_ms ?? 0;
+
+  // Rate limits — always relevant for subscription users
+  if (isOAuth) {
+    cols.push("5h Usage", "7d Usage");
+  }
+
+  // Cost — only for API-key users (not OAuth subscription)
+  if (!isOAuth) {
+    cols.push("Cost");
+  }
+
+  // Cache — show when there's meaningful cache activity
+  if (cacheRate !== null && cacheRate > 0) {
+    cols.push("Cache");
+  }
+
+  // Session — show when session has been running > 5 minutes
+  if (durationMs > 5 * 60_000) {
+    cols.push("Session");
+  }
+
+  // Changes — show when files are being modified
+  if (added > 0 || removed > 0) {
+    cols.push("Changes");
+  }
+
+  // Tokens — show when context pressure is building (>40%)
+  if (contextPct > 40) {
+    cols.push("Tokens");
+  }
+
+  // Context — always last (most visual, anchors the row)
+  cols.push("Context");
+
+  return cols;
+}
+
+function readConfig(input, usage) {
+  const defaultResult = { columns: ALL_COLUMNS.filter((id) => SECTION_DEFAULTS[id] !== false), layout: "vertical", smart: true };
   try {
     if (!existsSync(CONFIG_PATH)) {
-      return { columns: ALL_COLUMNS.filter((id) => SECTION_DEFAULTS[id] !== false), layout: "vertical" };
+      // No config file → smart mode by default
+      return { columns: smartColumns(input, usage), layout: "vertical", smart: true };
     }
     const cfg = parseJsonc(readFileSync(CONFIG_PATH, "utf-8"));
+    const layout = cfg.layout === "horizontal" ? "horizontal" : "vertical";
+
+    // Smart mode: auto-detect columns based on context
+    if (cfg.smart !== false) {
+      const base = smartColumns(input, usage);
+      // Apply explicit overrides from config on top of smart defaults
+      const overridden = base.filter((id) => cfg[id] !== false);
+      // Add any explicitly enabled columns not in smart set
+      for (const id of ALL_COLUMNS) {
+        if (cfg[id] === true && !overridden.includes(id)) {
+          overridden.push(id);
+        }
+      }
+      return { columns: overridden.length > 0 ? overridden : base, layout, smart: true };
+    }
+
+    // Manual mode: explicit column selection
     const enabled = ALL_COLUMNS.filter((id) => {
       if (id in cfg) return cfg[id] !== false;
       return SECTION_DEFAULTS[id] !== false;
     });
-    const layout = cfg.layout === "horizontal" ? "horizontal" : "vertical";
-    return { columns: enabled.length > 0 ? enabled : ALL_COLUMNS, layout };
+    return { columns: enabled.length > 0 ? enabled : ALL_COLUMNS, layout, smart: false };
   } catch {
-    return { columns: ALL_COLUMNS.filter((id) => SECTION_DEFAULTS[id] !== false), layout: "vertical" };
+    return defaultResult;
   }
 }
 
@@ -643,9 +719,10 @@ function qualityGate(session) {
 function writeContextBridge(input) {
   try {
     const pct = Math.round(input?.context_window?.used_percentage || 0);
-    const bf = `/tmp/octopus-ctx-${process.env.CLAUDE_SESSION_ID || "unknown"}.json`;
+    const sid = input?.session_id || process.env.CLAUDE_SESSION_ID || "unknown";
+    const bf = `/tmp/octopus-ctx-${sid}.json`;
     writeFileSync(bf, JSON.stringify({
-      session_id: process.env.CLAUDE_SESSION_ID || "unknown",
+      session_id: sid,
       used_pct: pct, remaining_pct: 100 - pct, ts: Math.floor(Date.now() / 1000),
     }) + "\n");
   } catch { /* */ }
@@ -655,131 +732,118 @@ function writeContextBridge(input) {
 
 function render(input, session, usage, transcript, latestVersion, config) {
   const pipe = `${C.slate800}\u2502`;
+  const version = input?.version ?? null;
+  const cost = input?.cost;
+
+  // Smart mode: auto-inject Version column when update is available
+  if (config.smart && version && latestVersion && version !== latestVersion) {
+    if (!config.columns.includes("Version")) config.columns.push("Version");
+  }
+
   const show = (id) => config.columns.includes(id);
   const contextPct = getContextPercent(input);
   const modelId = getModelId(input);
-  const version = input?.version ?? null;
-  const cost = input?.cost;
 
   // v9.6.0: Read progress for active agent display
   const progress = readProgress();
   const runningAgent = activeAgentName(progress);
 
-  // Build columns
-  const columns = [];
+  // v9.7.0: Effort level from stdin (CC v2.1.33+)
+  const effort = input?.effort_level ?? null;
+  const effortSymbol = effort ? { high: "\u25CF", medium: "\u25D0", low: "\u25CB" }[effort] || "" : "";
 
-  if (show("5h Usage")) {
-    let val;
-    if (usage) {
+  // Column factory — maps column IDs to their rendered {label, value}
+  const lbl = (id) => `${C.slate800bold}${id}:${C.reset}`;
+  const columnFactory = {
+    "Octo": () => {
+      let val = `${C.cyan}\u{1F419}${C.reset}`;
+      if (OCTO_VERSION) val += ` ${C.slate600}v${OCTO_VERSION}${C.reset}`;
+      if (effortSymbol) val += ` ${C.slate600}${effortSymbol}${C.reset}`;
+      return { label: lbl("Octo"), value: val };
+    },
+    "Model": () => ({ label: lbl("Model"), value: `${C.slate600}\u25CF ${modelId}${C.reset}` }),
+    "5h Usage": () => {
+      if (!usage) return { label: lbl("5h Usage"), value: `${C.slate600}N/A${C.reset}` };
       const color = colorForPercent(usage.fiveHour, 60, 80);
       const reset = formatResetTime(usage.fiveHourResets);
-      val = `${color}${Math.round(usage.fiveHour)}%${C.reset}${reset ? ` ${reset}` : ""}`;
-    } else {
-      val = `${C.slate600}N/A${C.reset}`;
-    }
-    columns.push({ label: `${C.slate800bold}5h Usage:${C.reset}`, value: val });
-  }
-
-  if (show("7d Usage")) {
-    let val;
-    if (usage) {
+      return { label: lbl("5h Usage"), value: `${color}${Math.round(usage.fiveHour)}%${C.reset}${reset ? ` ${reset}` : ""}` };
+    },
+    "7d Usage": () => {
+      if (!usage) return { label: lbl("7d Usage"), value: `${C.slate600}N/A${C.reset}` };
       const color = colorForPercent(usage.sevenDay, 60, 80);
       const reset = formatResetTime(usage.sevenDayResets);
-      val = `${color}${Math.round(usage.sevenDay)}%${C.reset}${reset ? ` ${reset}` : ""}`;
-    } else {
-      val = `${C.slate600}N/A${C.reset}`;
-    }
-    columns.push({ label: `${C.slate800bold}7d Usage:${C.reset}`, value: val });
-  }
-
-  if (show("Context")) {
-    // Auto-compact warning indicators (v9.6.0)
-    let warnPrefix = "";
-    if (contextPct >= 90) warnPrefix = `\u{1F480} `;       // skull
-    else if (contextPct >= 80) warnPrefix = `\u26A0\uFE0F `; // warning sign
-    columns.push({ label: `${C.slate800bold}Context:${C.reset}`, value: `${warnPrefix}${contextBar(contextPct)}` });
-  }
-
-  if (show("Cost")) {
-    const usd = cost?.total_cost_usd ?? 0;
-    const added = cost?.total_lines_added ?? 0;
-    const removed = cost?.total_lines_removed ?? 0;
-    const costColor = usd >= 1 ? C.red : usd >= 0.25 ? C.yellow : C.green;
-    let costVal = `${costColor}$${usd.toFixed(2)}${C.reset}`;
-    if (added || removed) {
-      costVal += ` ${C.green}+${added}${C.reset}/${C.red}-${removed}${C.reset}`;
-    }
-    columns.push({ label: `${C.slate800bold}Cost:${C.reset}`, value: costVal });
-  }
-
-  if (show("Cache")) {
-    const pct = cacheHitRate(input);
-    if (pct !== null) {
-      const color = pct >= 50 ? C.green : pct >= 20 ? C.yellow : C.slate600;
-      columns.push({ label: `${C.slate800bold}Cache:${C.reset}`, value: `${color}${pct}%${C.reset} ${C.slate600}hit${C.reset}` });
-    } else {
-      columns.push({ label: `${C.slate800bold}Cache:${C.reset}`, value: `${C.slate600}N/A${C.reset}` });
-    }
-  }
-
-  if (show("Model")) {
-    columns.push({ label: `${C.slate800bold}Model:${C.reset}`, value: `${C.slate600}\u25CF ${modelId}${C.reset}` });
-  }
-
-  if (show("Session")) {
-    const durationMs = cost?.total_duration_ms ?? 0;
-    const val = durationMs > 0 ? formatDuration(durationMs) : "N/A";
-    columns.push({ label: `${C.slate800bold}Session:${C.reset}`, value: `${C.slate600}${val}${C.reset}` });
-  }
-
-  if (show("Changes")) {
-    const added = cost?.total_lines_added ?? 0;
-    const removed = cost?.total_lines_removed ?? 0;
-    let val;
-    if (added || removed) {
-      val = `${C.green}+${added}${C.reset}${C.slate600}/${C.reset}${C.red}-${removed}${C.reset}`;
-    } else {
-      val = `${C.slate600}+0/-0${C.reset}`;
-    }
-    columns.push({ label: `${C.slate800bold}Changes:${C.reset}`, value: val });
-  }
-
-  if (show("Tokens")) {
-    const cu = input?.context_window?.current_usage;
-    const total = (cu?.input_tokens ?? 0) + (cu?.cache_creation_input_tokens ?? 0) + (cu?.cache_read_input_tokens ?? 0);
-    columns.push({ label: `${C.slate800bold}Tokens:${C.reset}`, value: `${C.slate600}${formatTokens(total)}${C.reset}` });
-  }
-
-  if (show("Output Tokens")) {
-    const outTokens = input?.context_window?.total_output_tokens ?? 0;
-    columns.push({ label: `${C.slate800bold}Out Tokens:${C.reset}`, value: `${C.slate600}${formatTokens(outTokens)}${C.reset}` });
-  }
-
-  if (show("API Time")) {
-    const apiMs = cost?.total_api_duration_ms ?? 0;
-    const val = apiMs > 0 ? formatDuration(apiMs) : "N/A";
-    columns.push({ label: `${C.slate800bold}API Time:${C.reset}`, value: `${C.slate600}${val}${C.reset}` });
-  }
-
-  if (show("Version")) {
-    const displayVersion = version || latestVersion;
-    if (displayVersion) {
+      return { label: lbl("7d Usage"), value: `${color}${Math.round(usage.sevenDay)}%${C.reset}${reset ? ` ${reset}` : ""}` };
+    },
+    "Context": () => {
+      let warnPrefix = "";
+      if (contextPct >= 90) warnPrefix = `\u{1F480} `;
+      else if (contextPct >= 80) warnPrefix = `\u26A0\uFE0F `;
+      return { label: lbl("Context"), value: `${warnPrefix}${contextBar(contextPct)}` };
+    },
+    "Cost": () => {
+      const usd = cost?.total_cost_usd ?? 0;
+      const added = cost?.total_lines_added ?? 0;
+      const removed = cost?.total_lines_removed ?? 0;
+      const costColor = usd >= 1 ? C.red : usd >= 0.25 ? C.yellow : C.green;
+      let val = `${costColor}$${usd.toFixed(2)}${C.reset}`;
+      if (added || removed) val += ` ${C.green}+${added}${C.reset}/${C.red}-${removed}${C.reset}`;
+      return { label: lbl("Cost"), value: val };
+    },
+    "Cache": () => {
+      const pct = cacheHitRate(input);
+      if (pct !== null) {
+        const color = pct >= 50 ? C.green : pct >= 20 ? C.yellow : C.slate600;
+        return { label: lbl("Cache"), value: `${color}${pct}%${C.reset} ${C.slate600}hit${C.reset}` };
+      }
+      return { label: lbl("Cache"), value: `${C.slate600}N/A${C.reset}` };
+    },
+    "Session": () => {
+      const durationMs = cost?.total_duration_ms ?? 0;
+      return { label: lbl("Session"), value: `${C.slate600}${durationMs > 0 ? formatDuration(durationMs) : "N/A"}${C.reset}` };
+    },
+    "Changes": () => {
+      const added = cost?.total_lines_added ?? 0;
+      const removed = cost?.total_lines_removed ?? 0;
+      const val = (added || removed)
+        ? `${C.green}+${added}${C.reset}${C.slate600}/${C.reset}${C.red}-${removed}${C.reset}`
+        : `${C.slate600}+0/-0${C.reset}`;
+      return { label: lbl("Changes"), value: val };
+    },
+    "Tokens": () => {
+      const cu = input?.context_window?.current_usage;
+      const total = (cu?.input_tokens ?? 0) + (cu?.cache_creation_input_tokens ?? 0) + (cu?.cache_read_input_tokens ?? 0);
+      return { label: lbl("Tokens"), value: `${C.slate600}${formatTokens(total)}${C.reset}` };
+    },
+    "Output Tokens": () => {
+      const outTokens = input?.context_window?.total_output_tokens ?? 0;
+      return { label: lbl("Out Tokens"), value: `${C.slate600}${formatTokens(outTokens)}${C.reset}` };
+    },
+    "API Time": () => {
+      const apiMs = cost?.total_api_duration_ms ?? 0;
+      return { label: lbl("API Time"), value: `${C.slate600}${apiMs > 0 ? formatDuration(apiMs) : "N/A"}${C.reset}` };
+    },
+    "Version": () => {
+      const displayVersion = version || latestVersion;
+      if (!displayVersion) return { label: lbl("Version"), value: `${C.slate600}N/A${C.reset}` };
       const dot = (version && latestVersion && version !== latestVersion)
         ? `${C.yellow}\u25CF${C.reset}` : `${C.green}\u25CF${C.reset}`;
-      columns.push({ label: `${C.slate800bold}Version:${C.reset}`, value: `${dot} ${C.slate600}v${displayVersion}${C.reset}` });
-    } else {
-      columns.push({ label: `${C.slate800bold}Version:${C.reset}`, value: `${C.slate600}N/A${C.reset}` });
-    }
-  }
+      return { label: lbl("Version"), value: `${dot} ${C.slate600}v${displayVersion}${C.reset}` };
+    },
+    "5h Reset": () => {
+      const val = usage?.fiveHourResets ? formatResetTime(usage.fiveHourResets) : "";
+      return { label: lbl("5h Reset"), value: val || `${C.slate600}N/A${C.reset}` };
+    },
+    "7d Reset": () => {
+      const val = usage?.sevenDayResets ? formatResetTime(usage.sevenDayResets) : "";
+      return { label: lbl("7d Reset"), value: val || `${C.slate600}N/A${C.reset}` };
+    },
+  };
 
-  if (show("5h Reset")) {
-    const val = usage?.fiveHourResets ? formatResetTime(usage.fiveHourResets) : `${C.slate600}N/A${C.reset}`;
-    columns.push({ label: `${C.slate800bold}5h Reset:${C.reset}`, value: val || `${C.slate600}N/A${C.reset}` });
-  }
-
-  if (show("7d Reset")) {
-    const val = usage?.sevenDayResets ? formatResetTime(usage.sevenDayResets) : `${C.slate600}N/A${C.reset}`;
-    columns.push({ label: `${C.slate800bold}7d Reset:${C.reset}`, value: val || `${C.slate600}N/A${C.reset}` });
+  // Build columns in config order (respects smart mode ordering)
+  const columns = [];
+  for (const id of config.columns) {
+    const factory = columnFactory[id];
+    if (factory) columns.push(factory());
   }
 
   const layout = config.layout || "vertical";
@@ -904,7 +968,7 @@ async function main() {
     getLatestVersion(),
   ]);
 
-  const config = readConfig();
+  const config = readConfig(input, usage);
   process.stdout.write(render(input, session, usage, transcript, latestVersion, config) + "\n");
 }
 
