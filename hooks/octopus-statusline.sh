@@ -16,7 +16,7 @@
 set -euo pipefail
 
 # Read stdin once and store it
-input=$(cat)
+input=$(timeout 3 cat 2>/dev/null || true); [[ -z "$input" ]] && input='{}'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HUD_MJS="${SCRIPT_DIR}/octopus-hud.mjs"
@@ -40,6 +40,12 @@ SESSION_FILE="${HOME}/.claude-octopus/session.json"
 # Extract statusline data
 MODEL=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+
+# Context bridge for agent awareness
+_BRIDGE="/tmp/octopus-ctx-${CLAUDE_SESSION_ID:-unknown}.json"
+printf '{"session_id":"%s","used_pct":%s,"remaining_pct":%s,"ts":%s}\n' \
+    "${CLAUDE_SESSION_ID:-unknown}" "$PCT" "$((100-PCT))" "$(date +%s)" \
+    > "$_BRIDGE" 2>/dev/null || true
 COST=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
 
 # v8.35.0: Extract worktree info (Claude Code v2.1.69+ provides worktree field)
@@ -66,13 +72,21 @@ else
     BAR_COLOR="$GREEN"
 fi
 
-# Build context bar
+# Build context bar (v9.6.0: gradient chars ▰▱)
 BAR_WIDTH=10
 FILLED=$((PCT * BAR_WIDTH / 100))
 EMPTY=$((BAR_WIDTH - FILLED))
 BAR=""
-[ "$FILLED" -gt 0 ] && BAR=$(printf "%${FILLED}s" | tr ' ' '█')
-[ "$EMPTY" -gt 0 ] && BAR="${BAR}$(printf "%${EMPTY}s" | tr ' ' '░')"
+[ "$FILLED" -gt 0 ] && BAR=$(printf "%${FILLED}s" | tr ' ' '▰')
+[ "$EMPTY" -gt 0 ] && BAR="${BAR}$(printf "%${EMPTY}s" | tr ' ' '▱')"
+
+# v9.6.0: Auto-compact warning prefix
+WARN_PREFIX=""
+if [ "$PCT" -ge 90 ]; then
+    WARN_PREFIX="💀 "
+elif [ "$PCT" -ge 80 ]; then
+    WARN_PREFIX="⚠️ "
+fi
 
 # Format cost
 COST_FMT=$(printf '$%.2f' "$COST")
@@ -101,7 +115,7 @@ if [[ -n "$PHASE" && "$PHASE" != "null" ]]; then
         wt_suffix=" | 🌿 ${WORKTREE_BRANCH}"
     fi
 
-    echo -e "${CYAN}[🐙 Octopus]${RESET} ${PHASE_EMOJI} ${PHASE} | ${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${YELLOW}${COST_FMT}${RESET}${wt_suffix}"
+    echo -e "${CYAN}[🐙 Octopus]${RESET} ${PHASE_EMOJI} ${PHASE} | ${WARN_PREFIX}${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${YELLOW}${COST_FMT}${RESET}${wt_suffix}"
 else
     # No active workflow - compact display
     local wt_suffix=""
@@ -109,5 +123,5 @@ else
         wt_suffix=" | 🌿 ${WORKTREE_BRANCH}"
     fi
 
-    echo -e "${CYAN}[🐙]${RESET} ${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${YELLOW}${COST_FMT}${RESET}${wt_suffix}"
+    echo -e "${CYAN}[🐙]${RESET} ${WARN_PREFIX}${BAR_COLOR}${BAR}${RESET} ${PCT}% | ${YELLOW}${COST_FMT}${RESET}${wt_suffix}"
 fi

@@ -7,7 +7,7 @@ A Claude Code plugin that turns one model into three. Orchestrates Codex, Gemini
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-9.4.2-blue" alt="Version 9.4.2">
+  <img src="https://img.shields.io/badge/Version-9.6.0-blue" alt="Version 9.6.0">
   <img src="https://img.shields.io/badge/Claude_Code-v2.1.50+-blueviolet" alt="Requires Claude Code v2.1.50+">
   <img src="https://img.shields.io/badge/Factory_AI-Compatible-orange" alt="Factory AI Compatible">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License">
@@ -33,8 +33,9 @@ A Claude Code plugin that turns one model into three. Orchestrates Codex, Gemini
 
 | Version | What shipped |
 |---------|-------------|
-| **9.x** | **92% fewer subshell forks** (9.4) — two rounds cut orchestrate.sh from ~900 forks/workflow to ~70. **Four-way debates** — Sonnet joins as permanent 4th participant. **Auto code review** after dev workflows. **claude-mem integration** — persistent cross-session memory. **Monolith decomposition** — 7 modules extracted to lib/. |
-| **8.55** | **Smart router v2.0** — just say what you need and `/octo:octo` routes to the right workflow. 17 supported workflows, learns your preferences over time |
+| **9.5–9.6** | **Context awareness** — workflow-aware warnings at 65/75/80% with phase-specific advice. **Polished statusline** — gradient bar, active agent name, auto-compact indicators (⚠/💀). **Session handoff** — `.octo-continue.md` preserves multi-LLM workflow state across sessions. **Smart router renamed** `/octo:auto`. **Intent pre-loading** — high-confidence prompts inject persona context before workflow starts. |
+| **9.0–9.4** | **92% fewer subshell forks** (9.4) — two rounds cut orchestrate.sh from ~900 forks/workflow to ~70. **Four-way debates** — Sonnet joins as permanent 4th participant. **Auto code review** after dev workflows. **claude-mem integration** — persistent cross-session memory. **Monolith decomposition** — 7 modules extracted to lib/. |
+| **8.55** | **Smart router v2.0** — just say what you need and `/octo:auto` routes to the right workflow. 17 supported workflows, learns your preferences over time |
 | **8.54** | **Multi-agentic research** — `/octo:research` now runs perspectives in parallel with configurable intensity (Quick / Standard / Deep) |
 | **8.53** | **Agent resume + custom agents** — `/octo:resume` continues previous agents, drop your own agents in `~/.claude/agents/` |
 | **8.50** | **Multi-LLM code review** — 4-agent fleet (Codex logic + Gemini security + Claude architecture + Perplexity CVE), inline PR comments |
@@ -122,9 +123,9 @@ Plus 30 more: review, debug, extract, deck, docs, schedule, parallel, sentinel, 
 Don't remember the command name? Just describe what you need:
 
 ```
-/octo:octo research microservices patterns    -> routes to discover phase
-/octo:octo build user authentication          -> routes to develop phase
-/octo:octo compare Redis vs DynamoDB          -> routes to debate
+/octo:auto research microservices patterns    -> routes to discover phase
+/octo:auto build user authentication          -> routes to develop phase
+/octo:auto compare Redis vs DynamoDB          -> routes to debate
 ```
 
 The smart router parses your intent and selects the right workflow.
@@ -149,23 +150,25 @@ Not sure which command to use? Pick by goal:
 | Debug a tricky issue | `/octo:debug` |
 | Just run something quick | `/octo:quick` |
 
-Or skip the table — type `/octo:octo <what you want>` or just say `octo <what you want>`, and the smart router picks for you. 🔍
+Or skip the table — type `/octo:auto <what you want>` or just say `octo <what you want>`, and the smart router picks for you. 🔍
 
 ---
 
 ## How It Works
 
-### Three Providers, One Workflow
+### Five Providers, One Workflow
 
-Claude Octopus coordinates Codex (OpenAI), Gemini (Google), and Claude (Anthropic) across every workflow. Each provider has a distinct role:
+Claude Octopus coordinates up to five AI providers across every workflow:
 
 | Provider | Role |
 |----------|------|
-| Codex | Implementation depth — code patterns, technical analysis, architecture |
-| Gemini | Ecosystem breadth — alternatives, security review, research synthesis |
-| Claude | Orchestration — quality gates, consensus building, final synthesis |
+| 🔴 Codex (OpenAI) | Implementation depth — code patterns, technical analysis, architecture |
+| 🟡 Gemini (Google) | Ecosystem breadth — alternatives, security review, research synthesis |
+| 🟣 Perplexity | Live web search — CVE lookups, dependency research, current docs |
+| 🌐 OpenRouter | Alternative model routing — access 100+ models via single API |
+| 🔵 Claude (Anthropic) | Orchestration — quality gates, consensus building, final synthesis |
 
-Providers run in parallel for research, sequentially for problem scoping, and adversarially for review. A 75% consensus quality gate prevents questionable work from shipping.
+Providers run in parallel for research, sequentially for problem scoping, and adversarially for review. A 75% consensus quality gate prevents questionable work from shipping. Only Claude is required — all others are optional and auto-detected.
 
 ### Double Diamond Phases
 

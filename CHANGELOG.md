@@ -1,3 +1,41 @@
+## [9.6.0] - 2026-03-18
+
+### Added
+
+- **Enhanced statusline**: Gradient context bar (`▰▱`), auto-compact warning indicators (`⚠` at 80%, `💀` at 90%), active agent name display, project state from `.octo/STATE.md` when idle. Performance-cached with 2s TTL.
+- **Workflow-aware context warnings**: `context-awareness.sh` now reads session.json and gives phase-specific advice (probe→"use /octo:quick", tangle→"split into smaller /octo:develop", ink→"focus on verification"). New 80% AUTO_COMPACT severity level.
+- **Session handoff file**: `.octo-continue.md` auto-written on PreCompact and SessionEnd. Contains workflow state, pending work, key decisions, blockers, and resume instructions. Read by `/octo:resume`.
+- **Enhanced intent detection**: `user-prompt-submit.sh` now has HIGH/LOW confidence levels (2+ keyword hits = HIGH). HIGH confidence injects persona context (security auditor, code reviewer, debugger, TDD orchestrator hints). Provider pre-warming writes `primed_providers` to session.json.
+- **New script**: `scripts/write-handoff.sh` — standalone handoff file generator.
+- 4 new test suites: enhanced-hud (18), context-awareness-v2 (14), handoff (12), prompt-submit-v2 (12) — 56 new assertions.
+
+---
+
+## [9.5.0] - 2026-03-18
+
+### Added
+
+- **Stdin timeout guards**: All 6 hook files now use `timeout 3 cat` instead of bare `cat` reads, preventing hook hangs on stdin stalls.
+- **50KB output guard**: `guard_output()` in `lib/utils.sh` redirects oversized output to temp files with `@file:` pointers. Wired into `aggregate_results()` and `synthesize_probe_results()`.
+- **Agent permission audit**: Removed `Agent` tool from 7 read-only agents (backend-architect, code-reviewer, security-auditor, performance-engineer, docs-architect, cloud-architect, database-architect). Added `readonly: true` to 6 agents. Removed `Bash` from security-auditor.
+- **Context bridge**: Both statusline hooks (bash + Node.js HUD) now write `/tmp/octopus-ctx-$SESSION.json` with context usage data for cross-hook awareness.
+- **Context awareness hook**: New `hooks/context-awareness.sh` (PostToolUse, blanket) warns at 65% (WARNING) and 75% (CRITICAL) context usage. Debounced every 5 tool calls with severity escalation bypass.
+- **Structured return contracts**: All 10 agent files now have `## Output Contract` with COMPLETE/BLOCKED/PARTIAL status markers and per-agent customized sections.
+- **Contract compliance scoring**: `score_result_file()` Factor 5 adds up to 20 pts for structured status markers in agent output.
+- **Compound init command**: `init-workflow)` dispatch case returns full environment bundle (providers, models, capabilities, files, paths) as JSON in a single call.
+- **Smart router renamed**: `/octo:octo` → `/octo:auto`. The old `/octo:octo` command remains as a legacy redirect. 40 commands total.
+- 6 new test suites: stdin-timeout-guards (12), output-guard (6), agent-permissions-audit (12), context-bridge (12), agent-return-contracts (32), compound-init (17) — 91 new assertions.
+
+---
+
+## [9.4.3] - 2026-03-17
+
+### Fixed
+
+- Legacy `claude-octopus` install detection in doctor and preflight — users who installed before the v9.0 rename to `octo` now see a clear diagnostic with the uninstall/reinstall command. (#196)
+
+---
+
 ## [9.4.2] - 2026-03-17
 
 ### Changed
