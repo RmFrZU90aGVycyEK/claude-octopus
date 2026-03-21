@@ -43,6 +43,19 @@
     {
       "matcher": {
         "tool": "Bash",
+        "pattern": "^\\s*codex\\s"
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/codex-exec-guard.sh",
+          "timeout": 5
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "tool": "Bash",
         "pattern": "codex exec"
       },
       "hooks": [
