@@ -1187,67 +1187,8 @@ get_agent_command() {
     esac
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SECURITY: Array-based command execution (safer than word-splitting)
-# Returns command as array elements for proper quoting
-# ═══════════════════════════════════════════════════════════════════════════════
-get_agent_command_array() {
-    local agent_type="$1"
-    local -n _cmd_array="$2"  # nameref for array output
-    local phase="${3:-}"
-    local role="${4:-}"
-    local model=""
-
-    # Configurable sandbox mode (v7.13.1 - Issue #9)
-    local codex_sandbox="${OCTOPUS_CODEX_SANDBOX:-workspace-write}"
-
-    case "$agent_type" in
-        codex|codex-standard|codex-max|codex-mini|codex-general)
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            _cmd_array=(codex exec --model "$model" --sandbox "$codex_sandbox")
-            ;;
-        codex-spark)  # v8.9.0: Ultra-fast Spark model
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            _cmd_array=(codex exec --model "$model" --sandbox "$codex_sandbox")
-            ;;
-        codex-reasoning)  # v8.9.0: Reasoning models (o3, o3)
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            _cmd_array=(codex exec --model "$model" --sandbox "$codex_sandbox")
-            ;;
-        codex-large-context)  # v8.9.0: 1M context models (gpt-4.1)
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            _cmd_array=(codex exec --model "$model" --sandbox "$codex_sandbox")
-            ;;
-        gemini|gemini-fast|gemini-image)
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            # v8.10.0: Fixed headless mode (Issue #25)
-            # Prompt delivered via stdin by callers (avoids OS arg limits)
-            # Callers add -p "" for headless mode trigger
-            case "${OCTOPUS_GEMINI_SANDBOX:-headless}" in
-                headless|auto-accept)
-                    _cmd_array=(env NODE_NO_WARNINGS=1 gemini -o text --approval-mode yolo -m "$model") ;;
-                interactive|prompt-mode)
-                    _cmd_array=(env NODE_NO_WARNINGS=1 gemini -m "$model") ;;
-                *)
-                    _cmd_array=(env NODE_NO_WARNINGS=1 gemini -o text --approval-mode yolo -m "$model") ;;
-            esac
-            ;;
-        codex-review)   _cmd_array=(codex exec review) ;; # No sandbox support
-        claude)         _cmd_array=(claude --print) ;;
-        claude-sonnet)  _cmd_array=(claude --print -m sonnet) ;;
-        claude-opus)    _cmd_array=(claude --print -m opus) ;;  # v8.0: Opus 4.6
-        claude-opus-fast) _cmd_array=(claude --print -m opus --fast) ;; # v8.4: Opus 4.6 Fast (v2.1.36+)
-        openrouter)     _cmd_array=(openrouter_execute) ;;       # OpenRouter API (v4.8)
-        openrouter-glm5)     _cmd_array=(openrouter_execute_model "z-ai/glm-5") ;;           # v8.11.0: GLM-5
-        openrouter-kimi)     _cmd_array=(openrouter_execute_model "moonshotai/kimi-k2.5") ;; # v8.11.0: Kimi K2.5
-        openrouter-deepseek) _cmd_array=(openrouter_execute_model "deepseek/deepseek-r1") ;; # v8.11.0: DeepSeek R1
-        perplexity|perplexity-fast)  # v8.24.0: Perplexity Sonar (Issue #22)
-            model=$(get_agent_model "$agent_type" "$phase" "$role")
-            _cmd_array=(perplexity_execute "$model")
-            ;;
-        *) return 1 ;;
-    esac
-}
+# NOTE: get_agent_command_array() removed in v9.7.7 — was dead code with broken
+# `-m` flag (#183). Use get_agent_command() which uses the correct `--model` flag.
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SECURITY: Environment isolation for external CLI providers (v8.7.0)
@@ -17410,13 +17351,9 @@ ${_blind_spot_checklist}"
     fi
 
     # Wait for all to complete with progress
-    if [[ "$ASYNC_MODE" == "true" ]]; then
-        wait_async_agents "${pids[@]}"
-    else
-        # v7.19.0 P1.2: Rich progress display
-        local start_time=$(date +%s)
-        display_rich_progress "$task_group" "${#pids[@]}" "$start_time" "${pids[@]}"
-    fi
+    # v7.19.0 P1.2: Rich progress display
+    local start_time=$(date +%s)
+    display_rich_progress "$task_group" "${#pids[@]}" "$start_time" "${pids[@]}"
 
     # Cleanup tmux if enabled
     if [[ "$TMUX_MODE" == "true" ]]; then
@@ -17877,23 +17814,18 @@ Output as numbered list with [CODING] or [REASONING] prefix for each subtask."
     log INFO "Spawned $subtask_num development threads"
 
     # Wait with progress monitoring
-    if [[ "$ASYNC_MODE" == "true" ]]; then
-        wait_async_agents "${pids[@]}"
-    else
-        # Original progress tracking
-        local completed=0
-        while [[ $completed -lt ${#pids[@]} ]]; do
-            completed=0
-            for pid in "${pids[@]}"; do
-                if ! kill -0 "$pid" 2>/dev/null; then
-                    ((completed++)) || true
-                fi
-            done
-            echo -ne "\r${CYAN}Progress: $completed/${#pids[@]} subtasks complete${NC}"
-            sleep 2
+    local completed=0
+    while [[ $completed -lt ${#pids[@]} ]]; do
+        completed=0
+        for pid in "${pids[@]}"; do
+            if ! kill -0 "$pid" 2>/dev/null; then
+                ((completed++)) || true
+            fi
         done
-        echo ""
-    fi
+        echo -ne "\r${CYAN}Progress: $completed/${#pids[@]} subtasks complete${NC}"
+        sleep 2
+    done
+    echo ""
 
     # Cleanup tmux if enabled
     if [[ "$TMUX_MODE" == "true" ]]; then
