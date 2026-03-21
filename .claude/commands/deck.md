@@ -5,20 +5,10 @@ description: Generate slide deck presentations from briefs or research
 
 # Deck - Slide Deck Generator
 
-## Instructions for Claude
+## Instructions
 
-When the user invokes this command (e.g., `/octo:deck <arguments>`):
-
-**Use the Skill tool:**
-```
-Skill(skill: "skill-deck", args: "<user's arguments>")
-```
-
-**Do NOT use Task tool** — this is a skill, not an agent type.
-
----
-
-**Auto-loads the `skill-deck` skill for slide deck generation with outline approval.**
+Read and follow the full skill instructions from:
+`${CLAUDE_PLUGIN_ROOT}/.claude/skills/skill-deck.md`
 
 ## Quick Usage
 

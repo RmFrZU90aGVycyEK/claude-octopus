@@ -5,25 +5,10 @@ description: Execute tasks in loops with conditions, iterative improvements unti
 
 # Loop - Iterative Execution Skill
 
-## 🤖 INSTRUCTIONS FOR CLAUDE
+## Instructions
 
-When the user invokes this command (e.g., `/octo:loop <arguments>`):
-
-**✓ CORRECT - Use the Skill tool:**
-```
-Skill(skill: "skill-iterative-loop", args: "<user's arguments>")
-```
-
-**✗ INCORRECT - Do NOT use Task tool:**
-```
-Task(subagent_type: "octo:loop", ...)  ❌ Wrong! This is a skill, not an agent type
-```
-
-**Why:** This command loads the `skill-iterative-loop` skill. Skills use the `Skill` tool, not `Task`.
-
----
-
-**Auto-loads the `skill-iterative-loop` skill for systematic iterative execution.**
+Read and follow the full skill instructions from:
+`${CLAUDE_PLUGIN_ROOT}/.claude/skills/skill-iterative-loop.md`
 
 ## Quick Usage
 

@@ -74,19 +74,12 @@ AskUserQuestion({
 
 **After receiving answers, incorporate them into the security audit scope and severity thresholds.**
 
-### Step 2: Execute Security Audit with Skill Tool
+### Step 2: Execute Security Audit
 
-**✓ CORRECT - Use the Skill tool:**
-```
-Skill(skill: "skill-security-framing", args: "<user's arguments + context>")
-```
+Read and follow the full skill instructions from:
+`${CLAUDE_PLUGIN_ROOT}/.claude/skills/skill-security-framing.md`
 
-**✗ INCORRECT - Do NOT use Task tool:**
-```
-Task(subagent_type: "octo:security", ...)  ❌ Wrong! This is a skill, not an agent type
-```
-
-**Why:** This command loads the `skill-security-audit` skill. Skills use the `Skill` tool, not `Task`.
+Apply the user's answers from Step 1 as the audit scope and severity thresholds.
 
 ---
 
