@@ -132,8 +132,9 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
     echo "## Output" >> "$result_file"
     echo '```' >> "$result_file"
 
-    # Append copilot headless flag (Gemini -p flag now handled in dispatch.sh via .toml commands)
-    if [[ "$agent_type" == copilot* ]]; then
+    # Append gemini/copilot headless flag (-p "" triggers stdin reading)
+    # NOTE: .toml commands exist for human use but don't compose with stdin in headless mode
+    if [[ "$agent_type" == gemini* ]] || [[ "$agent_type" == copilot* ]]; then
         cmd_array+=(-p "")
     fi
 
