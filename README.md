@@ -1,6 +1,6 @@
 # Claude Octopus
 
-A Claude Code plugin that orchestrates eight AI providers with distinct roles, adversarial review, and consensus gates — eight tentacles, zero blind spots.
+Multi-LLM orchestration plugin for Claude Code — coordinates Codex, Gemini, Perplexity, OpenRouter, Copilot, Qwen, and Ollama with consensus gates. Eight tentacles, zero blind spots.
 
 <p align="center">
   <img src="assets/social-preview.jpg" alt="Claude Octopus" width="640">
