@@ -284,6 +284,22 @@ detect_claude_code_version() {
         SUPPORTS_BG_BASH_5GB_KILL=true
     fi
 
+    # Check for v2.1.78+ features (StopFailure hook, CLAUDE_PLUGIN_DATA, agent effort/maxTurns/disallowedTools)
+    if version_compare "$CLAUDE_CODE_VERSION" "2.1.78" ">="; then
+        SUPPORTS_STOP_FAILURE_HOOK=true
+        SUPPORTS_PLUGIN_DATA_DIR=true
+        SUPPORTS_AGENT_EFFORT=true
+    fi
+
+    # Check for v2.1.83+ features (CwdChanged/FileChanged hooks, managed-settings.d/, env scrub, initialPrompt)
+    if version_compare "$CLAUDE_CODE_VERSION" "2.1.83" ">="; then
+        SUPPORTS_CWD_CHANGED_HOOK=true
+        SUPPORTS_FILE_CHANGED_HOOK=true
+        SUPPORTS_MANAGED_SETTINGS_D=true
+        SUPPORTS_ENV_SCRUB=true
+        SUPPORTS_AGENT_INITIAL_PROMPT=true
+    fi
+
     log "INFO" "Claude Code v$CLAUDE_CODE_VERSION detected"
     log "INFO" "Task Management: $SUPPORTS_TASK_MANAGEMENT | Fork Context: $SUPPORTS_FORK_CONTEXT | Agent Teams: $SUPPORTS_AGENT_TEAMS"
     log "INFO" "Persistent Memory: $SUPPORTS_PERSISTENT_MEMORY | Hook Events: $SUPPORTS_HOOK_EVENTS | Agent Type Routing: $SUPPORTS_AGENT_TYPE_ROUTING"
@@ -310,6 +326,9 @@ detect_claude_code_version() {
     log "INFO" "Effort Command: $SUPPORTS_EFFORT_COMMAND | BG Partial Results: $SUPPORTS_BG_PARTIAL_RESULTS"
     log "INFO" "Allow Read Sandbox: $SUPPORTS_ALLOW_READ_SANDBOX | SendMessage Auto Resume: $SUPPORTS_SENDMESSAGE_AUTO_RESUME | Agent No Resume Param: $SUPPORTS_AGENT_NO_RESUME_PARAM"
     log "INFO" "Plugin Validate Frontmatter: $SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER | Branch Command: $SUPPORTS_BRANCH_COMMAND | BG Bash 5GB Kill: $SUPPORTS_BG_BASH_5GB_KILL"
+    log "INFO" "StopFailure Hook: $SUPPORTS_STOP_FAILURE_HOOK | Plugin Data Dir: $SUPPORTS_PLUGIN_DATA_DIR | Agent Effort: $SUPPORTS_AGENT_EFFORT"
+    log "INFO" "CwdChanged Hook: $SUPPORTS_CWD_CHANGED_HOOK | FileChanged Hook: $SUPPORTS_FILE_CHANGED_HOOK | Managed Settings.d: $SUPPORTS_MANAGED_SETTINGS_D"
+    log "INFO" "Env Scrub: $SUPPORTS_ENV_SCRUB | Agent Initial Prompt: $SUPPORTS_AGENT_INITIAL_PROMPT"
 
     # v8.29.0: Context window control
     OCTOPUS_CONTEXT_WINDOW="${OCTOPUS_CONTEXT_WINDOW:-auto}"

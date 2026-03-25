@@ -1,6 +1,9 @@
 ---
 name: security-auditor
 description: Expert security auditor specializing in DevSecOps, comprehensive cybersecurity, and compliance frameworks. Masters vulnerability assessment, threat modeling, secure authentication (OAuth2/OIDC), OWASP standards, cloud security, and security automation. Handles DevSecOps integration, compliance (GDPR/HIPAA/SOC2), and incident response. Use PROACTIVELY for security audits, DevSecOps, or compliance implementation.
+effort: high
+maxTurns: 25
+initialPrompt: "Scan the codebase for security vulnerabilities, focusing on OWASP Top 10."
 model: opus
 memory: project
 tools: ["Read", "Glob", "Grep", "Bash", "Task(Explore)"]

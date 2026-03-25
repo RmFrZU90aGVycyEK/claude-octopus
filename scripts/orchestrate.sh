@@ -131,8 +131,10 @@ source "${SCRIPT_DIR}/lib/provider-routing.sh" 2>/dev/null || true
 # Prevents path traversal attacks and restricts to safe locations
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Apply workspace path validation
-if [[ -n "${CLAUDE_OCTOPUS_WORKSPACE:-}" ]]; then
+# Apply workspace path — prefer CLAUDE_PLUGIN_DATA (CC v2.1.78+), then user override, then default
+if [[ -n "${CLAUDE_PLUGIN_DATA:-}" ]]; then
+    WORKSPACE_DIR="${CLAUDE_PLUGIN_DATA}"
+elif [[ -n "${CLAUDE_OCTOPUS_WORKSPACE:-}" ]]; then
     WORKSPACE_DIR=$(validate_workspace_path "$CLAUDE_OCTOPUS_WORKSPACE") || exit 1
 else
     WORKSPACE_DIR="${HOME}/.claude-octopus"
@@ -286,6 +288,14 @@ SUPPORTS_AGENT_NO_RESUME_PARAM=false  # v9.5: Claude Code v2.1.77+ (Agent tool r
 SUPPORTS_PLUGIN_VALIDATE_FRONTMATTER=false # v9.5: Claude Code v2.1.77+ (claude plugin validate checks skill/agent frontmatter and hooks.json schema)
 SUPPORTS_BRANCH_COMMAND=false         # v9.5: Claude Code v2.1.77+ (/fork renamed to /branch for conversation branching)
 SUPPORTS_BG_BASH_5GB_KILL=false       # v9.5: Claude Code v2.1.77+ (background bash processes killed at 5GB output to prevent runaway tasks)
+SUPPORTS_STOP_FAILURE_HOOK=false      # v9.12: Claude Code v2.1.78+ (StopFailure hook event fires on API errors — rate limit, auth, billing)
+SUPPORTS_PLUGIN_DATA_DIR=false        # v9.12: Claude Code v2.1.78+ (${CLAUDE_PLUGIN_DATA} persistent state directory survives plugin updates)
+SUPPORTS_AGENT_EFFORT=false           # v9.12: Claude Code v2.1.78+ (effort/maxTurns/disallowedTools frontmatter for agents)
+SUPPORTS_CWD_CHANGED_HOOK=false       # v9.12: Claude Code v2.1.83+ (CwdChanged hook event fires when working directory changes)
+SUPPORTS_FILE_CHANGED_HOOK=false      # v9.12: Claude Code v2.1.83+ (FileChanged hook event fires when files change on disk)
+SUPPORTS_MANAGED_SETTINGS_D=false     # v9.12: Claude Code v2.1.83+ (managed-settings.d/ drop-in directory for policy fragments)
+SUPPORTS_ENV_SCRUB=false              # v9.12: Claude Code v2.1.83+ (CLAUDE_CODE_SUBPROCESS_ENV_SCRUB strips credentials from subprocesses)
+SUPPORTS_AGENT_INITIAL_PROMPT=false   # v9.12: Claude Code v2.1.83+ (initialPrompt agent frontmatter auto-submits first turn)
 SUPPORTS_CONTINUATION=false           # v8.30: Agent resume/continuation for iterative retries
 OCTOPUS_BACKEND="api"              # v8.16: Detected backend (api|bedrock|vertex|foundry)
 AGENT_TEAMS_ENABLED="${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-0}"

@@ -338,5 +338,27 @@
         }
       ]
     }
+  ],
+  "StopFailure": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-failure-log.sh",
+          "timeout": 5
+        }
+      ]
+    }
+  ],
+  "CwdChanged": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/cwd-changed.sh",
+          "timeout": 3
+        }
+      ]
+    }
   ]
 }

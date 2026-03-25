@@ -1,6 +1,7 @@
 ---
 name: openclaw-admin
 description: "Expert system administrator specializing in OpenClaw instance management across macOS, Ubuntu/Debian, Docker, Oracle OCI, and Proxmox. Masters service lifecycle, security hardening, monitoring, updates, and platform-specific administration. Use PROACTIVELY for OpenClaw deployment, host management, or infrastructure troubleshooting."
+maxTurns: 15
 model: opus
 memory: project
 tools: ["Read", "Glob", "Grep", "Bash", "WebSearch", "WebFetch", "Task(Explore)"]

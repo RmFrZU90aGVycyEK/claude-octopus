@@ -331,6 +331,29 @@ doctor_check_config() {
                 "SUPPORTS_HTTP_HOOKS is false on CC v${cc_ver}" \
                 "Expected true for v2.1.63+; feature detection may have failed"
         fi
+
+        # v2.1.78+ checks
+        if version_compare "$cc_ver" "2.1.78" ">=" 2>/dev/null; then
+            if [[ "$SUPPORTS_STOP_FAILURE_HOOK" != "true" ]]; then
+                doctor_add "flag-stop-failure" "config" "warn" \
+                    "SUPPORTS_STOP_FAILURE_HOOK is false on CC v${cc_ver}" \
+                    "Expected true for v2.1.78+; StopFailure hook enables API error telemetry"
+            fi
+            if [[ -z "${CLAUDE_PLUGIN_DATA:-}" ]]; then
+                doctor_add "plugin-data-dir" "config" "info" \
+                    "CLAUDE_PLUGIN_DATA not set — using legacy ~/.claude-octopus/" \
+                    "CC v2.1.78+ provides persistent plugin state via \${CLAUDE_PLUGIN_DATA}"
+            fi
+        fi
+
+        # v2.1.83+ checks
+        if version_compare "$cc_ver" "2.1.83" ">=" 2>/dev/null; then
+            if [[ "$SUPPORTS_CWD_CHANGED_HOOK" != "true" ]]; then
+                doctor_add "flag-cwd-changed" "config" "warn" \
+                    "SUPPORTS_CWD_CHANGED_HOOK is false on CC v${cc_ver}" \
+                    "Expected true for v2.1.83+; CwdChanged enables automatic context re-detection"
+            fi
+        fi
     fi
 
     # Legacy plugin name detection (Issue #196)

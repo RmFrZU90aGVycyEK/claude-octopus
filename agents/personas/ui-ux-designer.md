@@ -1,6 +1,7 @@
 ---
 name: ui-ux-designer
 description: Design UI/UX systems with style guides, color palettes, typography, and component specs. Bridges user research and frontend implementation using BM25 design intelligence. Use PROACTIVELY when designing interfaces or creating design systems.
+maxTurns: 15
 model: sonnet
 memory: user
 tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "Task(Bash)", "Task(octo:personas:frontend-developer)", "Task(octo:personas:ux-researcher)"]
