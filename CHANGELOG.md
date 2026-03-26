@@ -13,7 +13,14 @@
 - **Agent Teams bridge: nested guard** — `bridge_init_ledger()` refuses to create a new team when an active workflow is running.
 - **Agent Teams bridge: native discovery** — `bridge_discover_native_team()` reads CC's official `~/.claude/teams/` config.
 - **Agent Teams enable check** — `bridge_is_enabled()` logs when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is not set; doctor tip suggests enabling it.
-- 3 new test suites: `test-cc-v2183-sync.sh` (39 tests), `test-shell-safe-hooks-v2183.sh` (8 tests), `test-agent-teams-bridge.sh` (27 tests).
+- **PostHog usage analytics** — `hooks/telemetry-posthog.sh` sends anonymous, opt-in session/workflow/error events to PostHog. Random UUID identity, PII scrubbing, local buffering with batch flush on SessionEnd. Project key embedded in `settings.json` — users disable with `POSTHOG_OPT_OUT=1`.
+- 4 new test suites: `test-cc-v2183-sync.sh` (39), `test-shell-safe-hooks-v2183.sh` (8), `test-agent-teams-bridge.sh` (27), `test-posthog-telemetry.sh` (20).
+
+### Fixed
+
+- **128/128 tests passing** (was 105/128) — 18 test files updated to search `ALL_SRC` (orchestrate.sh + lib/*.sh) after v9.12.0 decomposition. Fixed NODE_NO_WARNINGS grep pattern, get_agent_command_array reference, YAML quoting, grep regex syntax, statusline fallback test, HTTP hook test.
+- **Provider detection enforcement** — Added `PROVIDER_CHECK_START` bash snippet to `skill-debate.md`, `flow-parallel.md`, `skill-ui-ux-design.md` (were showing hallucinated banners).
+- **Marketplace metadata version test** — `test-version-consistency.sh` now cross-checks both `metadata.version` fields to catch desyncs like the v9.10.3 incident.
 
 ### Changed
 
