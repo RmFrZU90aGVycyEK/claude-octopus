@@ -3,7 +3,7 @@
 Multi-LLM orchestration plugin for Claude Code — coordinates Codex, Gemini, Perplexity, OpenRouter, Copilot, Qwen, and Ollama with consensus gates. Eight tentacles, zero blind spots.
 
 <p align="center">
-  <img src="assets/social-preview.jpg" alt="Claude Octopus" width="640">
+  <img src="docs/assets/social-preview.jpg" alt="Claude Octopus" width="640">
 </p>
 
 <p align="center">
