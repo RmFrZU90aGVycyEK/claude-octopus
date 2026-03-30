@@ -68,6 +68,16 @@ AskUserQuestion({
       ]
     },
     {
+      question: "What design approach do you want?",
+      header: "Approach",
+      multiSelect: false,
+      options: [
+        {label: "Standard (Recommended)", description: "Single design direction with adversarial critique"},
+        {label: "Design Shotgun", description: "Generate 3+ variant directions from different providers, compare side-by-side, then refine winner"},
+        {label: "Tokens only", description: "Skip design direction, just generate design tokens from existing brand"}
+      ]
+    },
+    {
       question: "What design deliverables do you need?",
       header: "Deliverables",
       multiSelect: true,
@@ -160,9 +170,82 @@ python3 "$SEARCH_PY" "<user's requirements>" --stack <stack>
 
 **Collect all search results before proceeding to Phase 2.**
 
+### STEP 4b: Design Shotgun Mode (Only if user selected "Design Shotgun")
+
+**Skip this step if user selected "Standard" or "Tokens only".**
+
+When Design Shotgun is selected, dispatch the same design brief to multiple providers in parallel. Each provider generates an independent design direction without seeing the others' work.
+
+**Launch 3+ variant agents in parallel using the Agent tool with `run_in_background: true`:**
+
+Each agent receives:
+```
+Design a visual direction for: [user's product description]
+Product type: [from Step 1]
+Stack: [from Step 1]
+Search context: [key findings from Step 4 BM25 searches]
+
+Produce:
+1. A style name (2-3 words, e.g., "Warm Minimalism", "Bold Industrial", "Soft Gradient")
+2. Primary color palette (3-5 colors with hex values)
+3. Font pairing (heading + body)
+4. Layout philosophy (e.g., "generous whitespace with card-based content")
+5. One paragraph describing the overall feel
+
+Be distinctive — take a clear position rather than playing it safe.
+```
+
+**Dispatch to different providers for maximum diversity:**
+- 🔴 Codex: implementation-pragmatic direction (what builds fast and scales)
+- 🟡 Gemini: trend-aware direction (what's current in the design ecosystem)
+- 🔵 Claude: user-centered direction (what serves the audience best)
+- 🟤 OpenCode / 🟢 Copilot / 🟣 Qwen: additional variants if available
+
+**After all variants return, present a comparison board:**
+
+```
+🎨 **Design Shotgun — 3 Variants**
+
+━━━ Variant A: "Warm Minimalism" (🔴 Codex) ━━━
+Colors: #F5F0EB, #2D2A26, #E07A5F, #81B29A, #F2CC8F
+Fonts: Inter + Source Serif 4
+Feel: Clean, approachable, content-first with warm accent touches
+
+━━━ Variant B: "Bold Industrial" (🟡 Gemini) ━━━
+Colors: #0A0A0A, #FFFFFF, #FF6B35, #004E89, #1A936F
+Fonts: Space Grotesk + IBM Plex Sans
+Feel: High-contrast, technical authority, strong hierarchy
+
+━━━ Variant C: "Soft Gradient" (🔵 Claude) ━━━
+Colors: #667EEA, #764BA2, #F093FB, #F5F7FA, #1A202C
+Fonts: Satoshi + General Sans
+Feel: Modern, approachable, subtle depth through gradients
+```
+
+**Then ask the user to choose:**
+```javascript
+AskUserQuestion({
+  questions: [{
+    question: "Which design direction do you prefer?",
+    header: "Pick",
+    multiSelect: false,
+    options: [
+      {label: "Variant A", description: "[style name] — [one-line feel]"},
+      {label: "Variant B", description: "[style name] — [one-line feel]"},
+      {label: "Variant C", description: "[style name] — [one-line feel]"},
+      {label: "Mix & match", description: "Take elements from multiple variants"}
+    ]
+  }]
+})
+```
+
+**After selection, proceed to Step 5 using the chosen variant as the design direction.** If "Mix & match", ask which elements to combine before proceeding.
+
+---
+
 ### STEP 5: Phase 2 — Define (Design Direction)
 
-Synthesize search results into a design direction document:
+Synthesize search results (and chosen variant if shotgun mode) into a design direction document:
 
 1. **Style recommendation** — which visual style best fits the product (cite search results)
 2. **Color palette** — selected palette with hex values and contrast ratios

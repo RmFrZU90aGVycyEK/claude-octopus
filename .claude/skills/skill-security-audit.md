@@ -35,14 +35,81 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/orchestrate.sh squeeze "Security audit the authent
 ${CLAUDE_PLUGIN_ROOT}/scripts/orchestrate.sh auto "security audit the payment processing module"
 ```
 
+## Modes
+
+| Mode | Trigger | Confidence Gate | Scope |
+|------|---------|----------------|-------|
+| **Quick** (default) | "security scan", "quick audit" | 8/10 — only report high-confidence findings | Changed files only |
+| **Deep** | "deep security audit", "full CSO review" | 2/10 — flag anything suspicious | Entire codebase |
+
+When the user says "security audit" without qualifier, use **Quick** mode. Use **Deep** when they explicitly ask for comprehensive/full/deep scan.
+
 ## Capabilities
 
+### Core (both modes)
 - OWASP Top 10 vulnerability detection
 - SQL injection and XSS scanning
 - Authentication/authorization review
 - Secrets and credential detection
 - Dependency vulnerability assessment
 - Security configuration review
+
+### Secrets Archaeology (Deep mode)
+Scan git history for leaked credentials that may have been "deleted" but remain in commits:
+
+```bash
+# Search git history for common secret patterns
+git log --all -p --diff-filter=D -- '*.env' '*.key' '*.pem' 2>/dev/null | head -200
+git log --all -p -S 'AKIA' --pickaxe-regex 2>/dev/null | head -100  # AWS keys
+git log --all -p -S 'sk-[a-zA-Z0-9]{20,}' --pickaxe-regex 2>/dev/null | head -100  # API keys
+git log --all -p -S 'ghp_|gho_|github_pat_' --pickaxe-regex 2>/dev/null | head -100  # GitHub tokens
+git log --all -p -S 'password\s*[:=]' --pickaxe-regex 2>/dev/null | head -100  # Passwords
+```
+
+Report any findings with the commit SHA, file, and recommendation to rotate the credential.
+
+### CI/CD Pipeline Security (Deep mode)
+Audit GitHub Actions and CI configuration for injection and privilege escalation:
+
+```bash
+# Find all workflow files
+find .github/workflows -name '*.yml' -o -name '*.yaml' 2>/dev/null
+
+# Check for dangerous patterns:
+# 1. Untrusted input in run: blocks (command injection via PR titles/branch names)
+# 2. pull_request_target with checkout of PR code (code execution from forks)
+# 3. Overly broad permissions (write-all, contents: write)
+# 4. Missing pinned action versions (uses: actions/checkout vs actions/checkout@v4)
+# 5. Secrets exposed to pull_request events (accessible to forks)
+```
+
+Flag each finding with severity (CRITICAL/HIGH/MEDIUM/LOW).
+
+### Skill & Plugin Supply Chain (Deep mode)
+Verify integrity of installed Claude Code skills and plugins:
+
+```bash
+# List installed plugins
+ls -la ~/.claude/plugins/ 2>/dev/null
+
+# Check for skills that execute arbitrary bash
+grep -r 'exec\|eval\|bash -c' ~/.claude/skills/*/SKILL.md 2>/dev/null | head -20
+
+# Verify plugin sources (are they from known registries?)
+cat ~/.claude/plugins/*/plugin.json 2>/dev/null | grep -E '"source"|"registry"'
+```
+
+### STRIDE Threat Modeling (Deep mode)
+For the target component, enumerate threats across all 6 STRIDE categories:
+
+| Category | Question |
+|----------|----------|
+| **S**poofing | Can an attacker impersonate a user or component? |
+| **T**ampering | Can data be modified in transit or at rest? |
+| **R**epudiation | Can actions be denied without audit trail? |
+| **I**nformation Disclosure | Can sensitive data leak through logs, errors, or side channels? |
+| **D**enial of Service | Can the service be overwhelmed or starved? |
+| **E**levation of Privilege | Can a low-privilege user gain admin access? |
 
 ## Persona Reference
 
