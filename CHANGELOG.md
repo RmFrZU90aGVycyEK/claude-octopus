@@ -1,3 +1,32 @@
+## [9.16.0] - 2026-03-29
+
+### Skill Enhancements
+
+- **Sentinel canary monitoring** — `/octo:sentinel` auto-detects deployments and runs post-deploy health checks: HTTP status, load time regression (flagged at >50% baseline), console error detection, and Core Web Vitals comparison. Auto-triggers after `/octo:deliver` completes — no manual flags needed.
+- **Security auto-escalation** — `/octo:security` now auto-detects Quick vs Deep mode from the git diff. Touching auth, security, CI/CD, or dependency files auto-escalates to Deep mode with secrets archaeology (git history scan for leaked credentials), CI/CD pipeline audit (GitHub Actions injection risks), skill supply chain verification, and STRIDE threat modeling.
+- **Design shotgun** — `/octo:design-ui-ux` auto-dispatches to 3+ providers for parallel design variant generation when enough providers are available. Each provider produces an independent style direction; results presented as a side-by-side comparison board. Falls back to standard single-direction mode with fewer providers.
+- **Ship pipeline** — `skill-finish-branch` now always runs a multi-provider diff review before shipping (no size threshold). Adds optional version bump (patch/minor/major) and auto-generated changelog entries from commit history.
+- **Scope drift detection** — New `skill-scope-drift` compares diff against stated intent (TODOS.md, PR body, commit messages) and flags scope creep or missing requirements. Auto-integrated into `/octo:review` Step 1b — informational only, never blocks.
+- **Dynamic fleet dispatch** — `build-fleet.sh` enforces model family diversity across agents. Providers are spread across OpenAI, Google, Microsoft, Alibaba, and Anthropic families to avoid agreement bias from same-family models.
+
+### Terminal UX
+
+- **Statusline identity fix** — Tier 3 statusline now shows `[🐙 Octopus]` instead of `[🐙 Claude]`. Tier 2 idle mode shows `[🐙 Octopus]` instead of just `[🐙]`.
+- **Standardized hook prefixes** — All hook `additionalContext` messages now use `[🐙 Octopus]` prefix. Previously varied: `[Octopus Context Monitor]`, `[Compound Task]`, `[Octopus Strategy Rotation]`.
+- **Consolidated provider check** — New `scripts/helpers/check-providers.sh` replaces 7 inline copies of the 8-line provider check block across skill files.
+- **Output helpers** — New `octopus_header()`, `octopus_separator()`, `octopus_phase_banner()`, `octopus_complete()` in `lib/common.sh` standardize box-drawing output. Phase banners, config display, and error boxes all use consistent 60-char width.
+- **Compact banner mode** — Set `OCTOPUS_COMPACT_BANNERS=true` for single-line activation banners instead of full provider blocks.
+- **Clear action descriptions** — Replaced whimsical tentacle messages ("Extending empathy tentacles...") with clear provider dispatch descriptions across 6 files.
+- **Consistent completion messages** — All workflow completion messages now use `octopus_complete()` helper: `✓ [Workflow] complete`.
+
+### Other
+
+- **Codex compatibility layer** — Host platform detection for Codex and Gemini runtimes with graceful degradation.
+- **PostHog telemetry removed** — Unreliable hook delivery; telemetry hooks removed.
+- **README polish** — Hero demo GIF, Built with Claude badge, streamlined comparison table.
+
+---
+
 ## [9.15.2] - 2026-03-27
 
 ### Fixed
