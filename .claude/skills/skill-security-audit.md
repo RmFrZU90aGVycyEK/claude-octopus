@@ -35,14 +35,20 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/orchestrate.sh squeeze "Security audit the authent
 ${CLAUDE_PLUGIN_ROOT}/scripts/orchestrate.sh auto "security audit the payment processing module"
 ```
 
-## Modes
+## Modes (Auto-Detected)
 
-| Mode | Trigger | Confidence Gate | Scope |
-|------|---------|----------------|-------|
-| **Quick** (default) | "security scan", "quick audit" | 8/10 — only report high-confidence findings | Changed files only |
-| **Deep** | "deep security audit", "full CSO review" | 2/10 — flag anything suspicious | Entire codebase |
+| Mode | Auto-Trigger | Confidence Gate | Scope |
+|------|-------------|----------------|-------|
+| **Quick** (default) | Standard security scan, no sensitive files in diff | 8/10 — only high-confidence findings | Changed files only |
+| **Deep** (auto-escalated) | Diff touches auth/security/CI files, OR explicit request | 2/10 — flag anything suspicious | Entire codebase |
 
-When the user says "security audit" without qualifier, use **Quick** mode. Use **Deep** when they explicitly ask for comprehensive/full/deep scan.
+**Auto-escalation to Deep mode:** The skill automatically switches to Deep mode when ANY of these are true:
+- Diff includes files matching: `*auth*`, `*login*`, `*password*`, `*session*`, `*token*`, `*secret*`, `*crypt*`, `*oauth*`, `*saml*`, `*jwt*`, `*permission*`, `*rbac*`, `*acl*`
+- Diff includes CI/CD files: `.github/workflows/*`, `Dockerfile*`, `docker-compose*`, `.gitlab-ci*`
+- Diff includes dependency files: `package-lock.json`, `yarn.lock`, `Gemfile.lock`, `requirements.txt`, `go.sum`
+- The user explicitly says "deep", "full", "comprehensive", or "CSO"
+
+No user action needed — mode detection happens automatically from the git diff context.
 
 ## Capabilities
 

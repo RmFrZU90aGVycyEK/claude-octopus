@@ -68,16 +68,6 @@ AskUserQuestion({
       ]
     },
     {
-      question: "What design approach do you want?",
-      header: "Approach",
-      multiSelect: false,
-      options: [
-        {label: "Standard (Recommended)", description: "Single design direction with adversarial critique"},
-        {label: "Design Shotgun", description: "Generate 3+ variant directions from different providers, compare side-by-side, then refine winner"},
-        {label: "Tokens only", description: "Skip design direction, just generate design tokens from existing brand"}
-      ]
-    },
-    {
       question: "What design deliverables do you need?",
       header: "Deliverables",
       multiSelect: true,
@@ -170,11 +160,11 @@ python3 "$SEARCH_PY" "<user's requirements>" --stack <stack>
 
 **Collect all search results before proceeding to Phase 2.**
 
-### STEP 4b: Design Shotgun Mode (Only if user selected "Design Shotgun")
+### STEP 4b: Design Shotgun Mode (Auto-Activated When 3+ Providers Available)
 
-**Skip this step if user selected "Standard" or "Tokens only".**
+**This step runs automatically when the provider check in Step 2 detected 3 or more available providers (counting Claude as always available).** When fewer than 3 providers are available, skip to Step 5 and use standard single-direction mode.
 
-When Design Shotgun is selected, dispatch the same design brief to multiple providers in parallel. Each provider generates an independent design direction without seeing the others' work.
+Dispatch the same design brief to multiple providers in parallel. Each provider generates an independent design direction without seeing the others' work.
 
 **Launch 3+ variant agents in parallel using the Agent tool with `run_in_background: true`:**
 

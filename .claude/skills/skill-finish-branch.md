@@ -67,7 +67,7 @@ DIFF_STAT=$(git diff --stat $(git merge-base HEAD main)..HEAD)
 DIFF_FILES=$(git diff --name-only $(git merge-base HEAD main)..HEAD)
 ```
 
-If the diff is non-trivial (>50 lines changed), dispatch a quick review:
+**Always run a quick review — this is automatic, not optional:**
 
 ```bash
 # Quick review via orchestrate.sh (uses available providers)
@@ -77,7 +77,7 @@ $(git diff $(git merge-base HEAD main)..HEAD | head -500)"
 ```
 
 **If critical issues found:** Present them and ask whether to fix or ship anyway.
-**If clean or minor:** Continue to Step 3.
+**If clean:** Continue to Step 3. Show a brief `✓ Review clean — no issues found`.
 
 ---
 

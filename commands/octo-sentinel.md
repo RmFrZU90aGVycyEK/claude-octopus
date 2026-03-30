@@ -38,9 +38,16 @@ GitHub-aware work monitor that triages issues, PRs, and CI failures. Sentinel ob
 | CI Runs | Failed status | `/octo:debug` for investigation |
 | Deployments | Post-deploy health | Canary alerts → `/octo:debug` |
 
-## Canary Mode (Post-Deploy Monitoring)
+## Canary Mode (Post-Deploy Monitoring — Auto-Triggered)
 
-When invoked with `--canary`, sentinel switches to **post-deploy health monitoring**:
+**Auto-trigger:** Canary runs automatically when:
+- The `/octo:deliver` phase completes successfully (post-validation health check)
+- Sentinel `--watch` mode detects a new deployment via `gh api` (deployment event)
+- The user runs `git push` to a branch with an active Vercel/Netlify/Railway deployment
+
+No manual `--canary` flag needed — sentinel detects deployments and starts monitoring.
+
+When invoked explicitly with `--canary`, or auto-triggered, sentinel switches to **post-deploy health monitoring**:
 
 1. **Detect deployment** — reads the latest Vercel/GitHub deployment or uses the URL argument
 2. **Baseline capture** — screenshots + console output + performance timing from pre-deploy (or first run)
