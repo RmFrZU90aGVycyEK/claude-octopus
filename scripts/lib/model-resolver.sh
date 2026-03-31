@@ -91,15 +91,25 @@ resolve_octopus_model() {
             fi
 
             # Handle recursive reference (e.g. "codex:spark")
+            # v9.17.1: Skip cross-provider routing — if route targets a different provider,
+            # don't apply its model to the current provider (fixes #235 item 3)
             if [[ -n "$routed" && "$routed" != "null" ]]; then
                 if [[ "$routed" == *:* ]]; then
                     local ref_provider="${routed%%:*}"
                     local ref_type="${routed#*:}"
-                    resolved_model=$(resolve_octopus_model "$ref_provider" "$ref_type" "" "")
+                    if [[ "$ref_provider" != "$provider" ]]; then
+                        # Route targets a different provider — skip for this resolution
+                        [[ -n "$_trace" ]] && echo "[model-trace] Tier 3 (phase/role routing): SKIP (route $routed targets $ref_provider, resolving for $provider)" >&2
+                        routed=""
+                    else
+                        resolved_model=$(resolve_octopus_model "$ref_provider" "$ref_type" "" "")
+                    fi
                 else
                     resolved_model="$routed"
                 fi
-                [[ -n "$_trace" ]] && echo "[model-trace] Tier 3 (phase/role routing): $resolved_model ← SELECTED (route: $routed)" >&2
+                if [[ -n "$routed" ]]; then
+                    [[ -n "$_trace" ]] && echo "[model-trace] Tier 3 (phase/role routing): $resolved_model ← SELECTED (route: $routed)" >&2
+                fi
             else
                 [[ -n "$_trace" ]] && echo "[model-trace] Tier 3 (phase/role routing): —" >&2
             fi

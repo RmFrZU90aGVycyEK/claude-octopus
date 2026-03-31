@@ -109,6 +109,13 @@ Sources checked: TODOS.md ✓ | PR description ✗ | Commit messages (N commits)
 - [One-line recommendation: "Clean — proceed to review" or "N items drifted, M requirements missing — review with awareness"]
 ```
 
+## MANDATORY COMPLIANCE — DO NOT SKIP
+
+**When this skill is invoked, you MUST execute the scope drift analysis pipeline. You are PROHIBITED from:**
+- Skipping the diff comparison and guessing whether drift occurred
+- Reporting "no drift" without actually checking available intent sources
+- Blocking or gating reviews based on drift results (this is informational only)
+
 ## Integration Points
 
 ### In `/octo:deliver` (flow-deliver)

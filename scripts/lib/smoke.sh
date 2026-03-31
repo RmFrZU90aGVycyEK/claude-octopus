@@ -305,7 +305,7 @@ auto_detect_provider_config() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Tier cache file location
-TIER_CACHE_FILE="${WORKSPACE_DIR}/.tier-cache"
+TIER_CACHE_FILE="${WORKSPACE_DIR:-$HOME/.claude-octopus}/.tier-cache"
 TIER_CACHE_TTL=86400  # 24 hours in seconds
 
 # Check if tier cache is valid for a provider (not expired)
@@ -849,7 +849,7 @@ show_provider_status() {
 # Fast parallel test that catches real provider failures before workflow starts
 # ═══════════════════════════════════════════════════════════════════════════════
 
-SMOKE_TEST_CACHE_FILE="${WORKSPACE_DIR}/.smoke-test-cache"
+SMOKE_TEST_CACHE_FILE="${WORKSPACE_DIR:-$HOME/.claude-octopus}/.smoke-test-cache"
 
 # Compute cache key from current model config (auto-invalidates on config change)
 smoke_test_cache_key() {

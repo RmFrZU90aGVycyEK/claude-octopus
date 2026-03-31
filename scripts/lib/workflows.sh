@@ -168,7 +168,14 @@ IMPORTANT: If you find yourself searching or grepping more than 3 times in a row
     while true; do
         exit_code=0
         # v9.2.2: All agents use stdin to avoid ARG_MAX "Argument list too long" on large diffs (Issue #173)
-        if printf '%s' "$enhanced_prompt" | run_with_timeout "$TIMEOUT" "${cmd_array[@]}" 2> "$temp_errors" | tee "$raw_output" > "$temp_output"; then
+        # v9.17.1: Windows/MINGW fallback — pipe chain through tee loses stdout on Git Bash (fixes #235)
+        # Use file-based capture instead of pipe chain when on Windows
+        if [[ "${OCTOPUS_PLATFORM:-}" == MINGW* ]] || [[ "${OCTOPUS_PLATFORM:-}" == MSYS* ]]; then
+            printf '%s' "$enhanced_prompt" | run_with_timeout "$TIMEOUT" "${cmd_array[@]}" > "$raw_output" 2> "$temp_errors" || exit_code=$?
+            if [[ $exit_code -eq 0 ]]; then
+                cp "$raw_output" "$temp_output"
+            fi
+        elif printf '%s' "$enhanced_prompt" | run_with_timeout "$TIMEOUT" "${cmd_array[@]}" 2> "$temp_errors" | tee "$raw_output" > "$temp_output"; then
             exit_code=0
         else
             exit_code=$?

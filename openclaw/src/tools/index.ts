@@ -53,6 +53,7 @@ export const SKILL_REGISTRY: SkillRegistryEntry[] = [
   { name: "skill-parallel-agents", description: "Decompose large tasks across parallel agents — use for migrations, multi-file refactors, or batch work", type: "skill", file: "skill-parallel-agents.md" },
   { name: "skill-prd", description: "Write an AI-optimized PRD using multi-AI orchestration — use when scoping a new feature or product", type: "skill", file: "skill-prd.md" },
   { name: "skill-resume", description: "Pick up where you left off from a previous session — use after context resets, compaction, or new conversations", type: "skill", file: "skill-resume.md" },
+  { name: "skill-review-response", description: "How to handle code review feedback — verify before implementing, push back when wrong, never agree blindly", type: "skill", file: "skill-review-response.md" },
   { name: "skill-rollback", description: "Roll back to a previous checkpoint via git — use when a change went wrong and you need to revert", type: "skill", file: "skill-rollback.md" },
   { name: "skill-security-framing", description: "URL validation and content sanitization for untrusted sources — use when handling external input safely", type: "skill", file: "skill-security-framing.md" },
   { name: "skill-ship", description: "Package and finalize completed work for delivery — use when a feature is done and ready to ship", type: "skill", file: "skill-ship.md" },
@@ -61,7 +62,7 @@ export const SKILL_REGISTRY: SkillRegistryEntry[] = [
   { name: "skill-task-management", description: "Manage tasks with Claude Code native tools — use to track TODOs, delegate work, and monitor progress", type: "skill", file: "skill-task-management-v2.md" },
   { name: "skill-tdd", description: "Build features with tests-before-code rigor — use for new features needing test coverage", type: "skill", file: "skill-tdd.md" },
   { name: "skill-thought-partner", description: "Brainstorm creatively with pattern spotting and paradox hunting — use for ideation and exploration", type: "skill", file: "skill-thought-partner.md" },
-  { name: "skill-verify", description: "Verify claims with actual evidence before declaring success — use to prevent false completion", type: "skill", file: "skill-verify.md" },
+  { name: "skill-verification-gate", description: "Evidence before claims — run verification commands before declaring work complete, fixed, or passing", type: "skill", file: "skill-verification-gate.md" },
   { name: "skill-visual-feedback", description: "Process screenshot-based UI/UX feedback to fix visual issues — use when users share screenshots of bugs", type: "skill", file: "skill-visual-feedback.md" },
   { name: "skill-writing-plans", description: "Create zero-context implementation plans with bite-sized tasks — use for multi-step feature planning", type: "skill", file: "skill-writing-plans.md" },
   { name: "sys-configure", description: "Configure Claude Octopus providers, models, and preferences — use for initial setup or provider changes", type: "skill", file: "sys-configure.md" },
@@ -78,6 +79,7 @@ export const SKILL_REGISTRY: SkillRegistryEntry[] = [
   { name: "design-ui-ux", description: "Design UI/UX systems with style guides, palettes, typography, and component specs", type: "command", file: "design-ui-ux.md" },
   { name: "develop", description: "Development phase - Build solutions with multi-AI implementation and quality gates", type: "command", file: "develop.md" },
   { name: "dev", description: "Switch to Dev Work mode - optimized for software development", type: "command", file: "dev.md" },
+  { name: "discipline", description: "Toggle discipline mode — auto-invoke verification, brainstorming-before-coding, and review checks", type: "command", file: "discipline.md" },
   { name: "discover", description: "Discovery phase - Multi-AI research and exploration", type: "command", file: "discover.md" },
   { name: "docs", description: "Document delivery with export to PPTX, DOCX, PDF formats", type: "command", file: "docs.md" },
   { name: "doctor", description: "Environment diagnostics — check providers, auth, config, hooks, scheduler, and more", type: "command", file: "doctor.md" },
@@ -114,4 +116,4 @@ export const SKILL_REGISTRY: SkillRegistryEntry[] = [
   { name: "unfreeze", description: "Remove freeze mode edit restriction", type: "command", file: "unfreeze.md" },
 ];
 
-export const REGISTRY_COUNT = 97;
+export const REGISTRY_COUNT = 99;
