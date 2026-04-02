@@ -345,7 +345,6 @@ To enable it, add the server to your project's `.mcp.json` or global Claude Code
       "args": ["--require", "./mcp-server/check-node-version.js", "./mcp-server/dist/index.js"],
       "cwd": "<path-to-claude-octopus>",
       "env": {
-        "CLAUDE_OCTOPUS_MCP_MODE": "true",
         "OCTO_CLAW_ENABLED": "true"
       }
     }

@@ -435,7 +435,7 @@ async function main() {
     console.error(
       "octo-claw MCP server is disabled by default. " +
       "Set OCTO_CLAW_ENABLED=true to start it. " +
-      "See docs/openclaw-setup.md for details."
+      "See README.md § MCP Server for setup instructions."
     );
     process.exit(0);
   }
