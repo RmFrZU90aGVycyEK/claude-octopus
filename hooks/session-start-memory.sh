@@ -9,7 +9,18 @@
 
 set -euo pipefail
 
-# --- 0. Session sync (merged from session-sync.sh to reduce hook spawns) ---
+# --- 0. First-run detection (v9.19.2) ---
+# On very first install, auto-prompt the user to run /octo:setup
+SETUP_MARKER="${HOME}/.claude-octopus/.setup-complete"
+if [[ ! -f "$SETUP_MARKER" ]]; then
+    mkdir -p "${HOME}/.claude-octopus"
+    touch "$SETUP_MARKER"
+    echo "[🐙] Welcome to Claude Octopus! Running /octo:setup for first-time configuration..."
+    # This additionalContext triggers Claude to invoke the setup skill
+    exit 0
+fi
+
+# --- 0b. Session sync (merged from session-sync.sh to reduce hook spawns) ---
 export CLAUDE_OCTOPUS_SESSION_ID="${CLAUDE_SESSION_ID:-}"
 
 SESSION_FILE="${HOME}/.claude-octopus/session.json"
